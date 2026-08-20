@@ -1,0 +1,16 @@
+# Fotos originales sin optimizar: pesan ~37 MB entre las dos y ya están
+# convertidas a WebP en img/. Se mantienen sólo en el disco local.
+Resources/psicologia infantil y familiar en centro iluminate 1.jpg
+Resources/psicopedagogia en centro iluminate 1.jpg
+
+# Secciones retiradas del sitio; su historial vive en los commits
+_retirado-*.html
+
+# Scratch y temporales
+_tmp*
+*.tmp
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,13 @@
+# El sitio está en UTF-8 con BOM y saltos CRLF. Se marca como binario para que
+# git lo guarde byte a byte y no normalice los saltos de línea al clonar en
+# otro sistema operativo: hacerlo ensuciaría el archivo completo.
+*.html -text
+
+# Binarios, sin conversión ni diff de texto
+*.webp binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.avif binary
+*.ttf  binary
+*.pdf  binary

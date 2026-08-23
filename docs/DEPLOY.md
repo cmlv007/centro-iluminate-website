@@ -59,6 +59,38 @@ Lo verificado el 23 de agosto de 2026, sirviendo `dist/` en un servidor local:
 - **El archivo llega byte a byte**: sigue en UTF-8 con BOM y saltos CRLF después
   de la copia, como exige `.gitattributes`.
 
+## Los dos remotos y para qué es cada uno
+
+| remoto | dónde | rol |
+|---|---|---|
+| `origin` | `AEONS-Agency/centro-iluminate-website` | repo de trabajo de la agencia. **El upstream de `main` apunta aquí**, así que un `git push` a secas va a este |
+| `respaldo` | `Bastyasjk/centro-iluminate-website` | copia personal del operador, privada. Se empuja explícitamente |
+
+Los dos son **privados** y los dos están en el mismo commit. Es la misma
+convención que `chucaw-website`, que tiene además un tercer remoto `cliente` —
+aquí no hay repositorio del cliente todavía.
+
+Para empujar a los dos:
+
+```
+git push origin main && git push respaldo main
+```
+
+Cuidado con `git push -u respaldo main`: el `-u` **cambia el upstream de la
+rama** y a partir de ahí un `git push` a secas deja de ir al repo de trabajo y
+va al respaldo, sin decir nada. Pasó al crear el respaldo y se revirtió con
+`git branch --set-upstream-to=origin/main main`. Empuja al respaldo nombrándolo,
+sin `-u`.
+
+Y el repo personal es privado **porque tiene que serlo**: el árbol lleva
+`Referencias/` con el brief del centro y la investigación de la competencia. Es
+el mismo material que el build de Netlify deja fuera a propósito. Comprobar la
+visibilidad, no darla por hecha:
+
+```
+gh repo view Bastyasjk/centro-iluminate-website --json visibility
+```
+
 ---
 
 ## Fase 1 — Netlify (TEMPORAL)

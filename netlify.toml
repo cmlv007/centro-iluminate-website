@@ -1,0 +1,49 @@
+# Netlify — hospedaje TEMPORAL, para enseñar el sitio al cliente por una URL.
+#
+# Este archivo se escribe para poder BORRARSE. Es la única pieza del repositorio
+# que sabe que Netlify existe: no hay un `index.html` renombrado, ni un
+# `robots.txt` versionado, ni una línea del sitio que cambie. Migrar a hospedaje
+# definitivo es borrar este archivo, y no queda rastro.
+#
+# Por qué hay un paso de build para un sitio de UN archivo estático: la raíz del
+# repositorio NO es publicable. Junto al sitio viven `Referencias/` (3,7 MB — el
+# brief del centro en PDF, la investigación de competencia y los tableros de
+# inspiración) y `Resources/` (11 MB de fotos originales). Publicar la raíz los
+# dejaría accesibles por URL adivinable. El build arma `dist/` con lo único que
+# el sitio consume de verdad: el HTML y las 36 imágenes de `img/`.
+#
+# Que son 36 y ninguna falta está medido: las rutas `img/…` que cita el HTML y
+# los archivos que hay en `img/` son el MISMO conjunto de 36. Ni un 404, ni una
+# huérfana. El sitio no cita `Resources/` ni `Referencias/` ni una sola vez.
+
+[build]
+  # Sin `npm`, sin dependencias, sin package.json: el sitio no tiene build
+  # propio. Esto es una copia con dos renombrados.
+  #
+  # `dist/index.html` — Netlify sirve `index.html` en la raíz del directorio
+  # publicado, y el archivo se llama `centro-iluminate-sitio.html`. Se copia con
+  # el nombre que la plataforma espera en vez de renombrar el original, para que
+  # el repositorio siga sin saber de esto.
+  #
+  # `robots.txt` se GENERA acá y no se versiona, por la misma razón: es una
+  # regla del prototipo, no del sitio. Cuando se publique de verdad, se va junto
+  # con este archivo. Un `noindex` versionado sería lo contrario — algo que
+  # alguien tiene que acordarse de quitar el día del lanzamiento, y el precio de
+  # olvidarlo es que el sitio real nace invisible para los buscadores.
+  command = "rm -rf dist && mkdir -p dist && cp centro-iluminate-sitio.html dist/index.html && cp -R img dist/img && printf 'User-agent: *\\nDisallow: /\\n' > dist/robots.txt"
+  publish = "dist"
+
+# El prototipo no se indexa. Acá SÍ debería funcionar una regla de cabeceras, y
+# es la diferencia con `chucaw-website`: allá se midió que `X-Robots-Tag` no
+# llegaba, porque todas las rutas las servía la función SSR del runtime de Next
+# y las cabeceras de Netlify solo alcanzan a los archivos estáticos del CDN.
+# Este sitio ES archivos estáticos: no hay otra capa que los sirva.
+#
+# «Debería funcionar» no es haberlo comprobado. Verificar tras el primer deploy:
+#   curl -sI https://<sitio>.netlify.app | grep -i x-robots-tag
+# Si sale vacío, la cabecera no llegó y el `robots.txt` es lo único que queda.
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

@@ -14,3 +14,10 @@ _tmp*
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Carpeta que arma el build de Netlify (ver netlify.toml). Es salida, no fuente:
+# se rehace entera en cada despliegue a partir del HTML y de img/.
+dist/
+
+# Estado local del CLI de Netlify (site_id y cachés del build).
+.netlify

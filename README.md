@@ -17,6 +17,17 @@ Referencias/                  Brief del centro, paleta, inspiración visual y lo
 Forum-Regular.ttf             Fuente de titulares (va incrustada en base64 en el HTML)
 ```
 
+## Cómo publicarlo
+
+Para enseñárselo al cliente por una URL hay un hospedaje temporal en Netlify.
+Todo lo que sabe de él es `netlify.toml`, y el procedimiento —incluidas las
+trampas que ya costaron una tarde en otro proyecto— está en
+[`docs/DEPLOY.md`](docs/DEPLOY.md).
+
+Lo que se publica **no es la raíz del repositorio**: el build arma `dist/` con
+el HTML y `img/`, y deja fuera `Referencias/` y `Resources/`, que llevan
+material interno del cliente.
+
 ## Convenciones del código
 
 - **Todo en español**, incluidos los nombres de clases CSS y los comentarios

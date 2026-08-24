@@ -858,6 +858,21 @@ a.serv{display:block}
 @media(min-width:861px){
   .pie-grande svg{width:55%;margin-inline:auto}
 }
+
+/* Carril de terapias en movil: el bloque de titulo y descripcion era
+   `position:absolute` y el hueco se reservaba con un padding-top fijo de
+   180px en .carril-zona. Un hueco fijo no puede reservar un texto variable:
+   a 500px el bloque mide 220px MEDIDOS, faltan 40, y la tarjeta le pisa las
+   ultimas lineas. Y la descripcion mas larga de las cinco (Psicologia
+   infanto-juvenil, 266 caracteres frente a los 231 de la que ya se
+   desbordaba) necesita todavia mas.
+   Se arregla quitando la causa, no subiendo el numero: en movil el bloque
+   vuelve al flujo normal y ocupa lo que necesite. Encima queda imposible por
+   construccion, no por haber acertado la cifra. */
+@media(max-width:700px){
+  .carril-zona{padding-top:0}
+  .carril-cab{position:static;margin-bottom:1.5rem}
+}
 </style>
 </head>
 <body>

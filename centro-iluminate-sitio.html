@@ -848,6 +848,16 @@ a.serv{display:block}
 .hero-cta{margin-top:.4rem;box-shadow:none;padding:.82rem 1.5rem;
   font-weight:500;font-size:.95rem;gap:.5rem}
 .hero-cta svg{width:15px;height:15px}
+
+/* El logotipo grande del pie iba al 100% del ancho: en movil llena bien, pero
+   en desktop son ~1180px y se come el minimalismo del resto del pie. Baja al
+   62% y se centra, porque encogerlo dejandolo a la izquierda abre un hueco a
+   la derecha que desequilibra mas que el tamano original.
+   861px es donde el pie deja de ser de tres columnas, asi que movil y tablet
+   se quedan exactamente como estaban. */
+@media(min-width:861px){
+  .pie-grande svg{width:62%;margin-inline:auto}
+}
 </style>
 </head>
 <body>

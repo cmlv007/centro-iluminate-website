@@ -10,11 +10,40 @@
 # brief del centro en PDF, la investigación de competencia y los tableros de
 # inspiración) y `Resources/` (11 MB de fotos originales). Publicar la raíz los
 # dejaría accesibles por URL adivinable. El build arma `dist/` con lo único que
-# el sitio consume de verdad: el HTML y las 36 imágenes de `img/`.
+# el sitio consume de verdad: los cuatro HTML y las 56 imágenes de `img/` (incluye
+# `img/terapeutas/`, con los retratos de las fichas del equipo).
 #
-# Que son 36 y ninguna falta está medido: las rutas `img/…` que cita el HTML y
-# los archivos que hay en `img/` son el MISMO conjunto de 36. Ni un 404, ni una
-# huérfana. El sitio no cita `Resources/` ni `Referencias/` ni una sola vez.
+# Que ninguna falta está medido: las rutas `img/…` que citan los cuatro HTML y los
+# archivos que hay en `img/` son el MISMO conjunto de 56 (eran 37 hasta que las
+# fichas de `terapeutas.html` estrenaron sus fotos, en `img/terapeutas/`, la
+# portada del equipo sumó `portada-equipo.webp` y `servicios.html` sumó sus dos
+# fondos, `portada-servicios.webp` y `cierre-servicios.webp`, y después tres
+# fotos más: `terapias-grupo.webp` y `psicopedagogia-mesa.webp` para las
+# pestañas de terapias y `orientacion-escolar.webp` para la fila de familia; después
+# `terapia-floral.webp`, `talleres-autocuidado.webp` y `orientacion-online.webp`
+# para las tres láminas nuevas de esa misma fila, y por último
+# `gloria-de-villar-panoramica.webp`, el retrato que es la portada entera de
+# `conocenos.html` (reemplazó a `gloria-del-villar-portada.webp`, que sigue en
+# `img/` sin uso: la panorámica trae a Gloria ya corrida a la derecha en el
+# propio archivo y encuadra mejor), `gloria-de-villar-founder-centro-iluminate.webp`,
+# el retrato en mancha orgánica de «Mi historia», y
+# `gloria-paola-coordinadoras-centro-iluminate.webp`, las dos socias en un stand,
+# que reemplazó al retrato de Paola sola —`img/terapeutas/paola-rivera.webp`, que
+# NO quedó huérfana: sigue en su ficha de `terapeutas.html`—; y la última,
+# `apoyo-entre-mujeres.webp`, la fotografía del grupo de mamás azules en
+# `conocenos.html` (recorte a 1600px de ancho y calidad 80 del JPG que trajo el
+# usuario, que queda sin usar en `img/` como los demás originales).
+# Ni un 404, ni una huérfana. El sitio no cita `Resources/` ni `Referencias/` ni una vez.
+#
+# `portada-servicios.webp` cambió de oficio y no de archivo: era el fondo de la
+# vieja portada de servicios y ahora es la fotografía de atrás del abanico de la
+# portada nueva.
+#
+# Al recontar queda UN falso positivo, y es un comentario: `terapeutas.html`
+# cita `img/terapeutas/nombre-apellido.webp` dentro de un comentario CSS —el
+# ejemplo de cómo poner una foto en una ficha—. Un grep a secas da 57 y una
+# imagen «faltante» que no lo es. (El otro falso positivo de antes, la placa de
+# monograma pendiente de `conocenos.html`, se fue con su sección.)
 
 [build]
   # Sin `npm`, sin dependencias, sin package.json: el sitio no tiene build
@@ -30,8 +59,19 @@
   # con este archivo. Un `noindex` versionado sería lo contrario — algo que
   # alguien tiene que acordarse de quitar el día del lanzamiento, y el precio de
   # olvidarlo es que el sitio real nace invisible para los buscadores.
-  command = "rm -rf dist && mkdir -p dist && cp centro-iluminate-sitio.html dist/index.html && cp -R img dist/img && printf 'User-agent: *\\nDisallow: /\\n' > dist/robots.txt"
+  command = "rm -rf dist && mkdir -p dist && cp centro-iluminate-sitio.html dist/index.html && cp terapeutas.html dist/terapeutas.html && cp servicios.html dist/servicios.html && cp conocenos.html dist/conocenos.html && cp -R img dist/img && printf 'User-agent: *\\nDisallow: /\\n' > dist/robots.txt"
   publish = "dist"
+
+# `terapeutas.html`, `servicios.html` y `conocenos.html` viajan con su nombre, que es como las enlaza el menú. Lo que
+# NO existe aquí es `/centro-iluminate-sitio.html` —la portada sólo se sirve
+# como `/`— y la página de terapeutas vuelve a ella por ese nombre, porque
+# también tiene que funcionar abriendo los archivos desde el disco, donde no hay
+# `index.html`. La regla lo resuelve: 301 a la raíz; el navegador conserva el
+# `#ancla` porque el destino no trae uno.
+[[redirects]]
+  from = "/centro-iluminate-sitio.html"
+  to = "/"
+  status = 301
 
 # El prototipo no se indexa. Acá SÍ debería funcionar una regla de cabeceras, y
 # es la diferencia con `chucaw-website`: allá se midió que `X-Robots-Tag` no

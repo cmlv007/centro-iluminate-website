@@ -1,17 +1,26 @@
 # Despliegue — sitio de Centro Ilumínate
 
-> **Última actualización:** 23 de agosto de 2026.
+> **Última actualización:** 4 de septiembre de 2026.
 > Estado: **prototipo VIVO en https://centro-iluminate.netlify.app**, sin
 > indexar y con el material interno del cliente comprobadamente fuera.
 > Hospedaje temporal; el definitivo sigue sin decidir (Fase 2).
+>
+> **Ojo con los recuentos.** Las comprobaciones de más abajo se midieron el 23
+> de agosto, cuando el sitio era **una** página y 36 imágenes. Hoy son cuatro
+> páginas y 47 imágenes, así que aquellas cuentas **ya no son el control
+> válido**: quedan como acta de ese día, y al final va la lista de lo que hay
+> que volver a pedirle al servidor en el próximo despliegue.
 
 ## Qué hay que servir
 
 Es lo primero, porque descarta la mitad de las opciones antes de elegir nada:
 
-- **Un solo archivo estático**, `centro-iluminate-sitio.html` (164 KB), con el
-  CSS, el JavaScript y la tipografía Forum en base64 dentro.
-- **36 imágenes** en `img/` (2,1 MB), en WebP y SVG.
+- **Cuatro archivos estáticos**, cada uno con el CSS, el JavaScript y la
+  tipografía Forum en base64 dentro: `centro-iluminate-sitio.html` (~175 KB, se
+  publica como `index.html`), `terapeutas.html` (~183 KB), `servicios.html`
+  (~170 KB) y `conocenos.html` (~150 KB).
+- **47 imágenes** en `img/`, en WebP y SVG, incluida la subcarpeta
+  `img/terapeutas/` con los retratos de las fichas del equipo.
 - **Sin build, sin dependencias, sin servidor.** No hay `package.json`. Nada que
   compilar y ningún proceso que tenga que estar corriendo.
 
@@ -30,7 +39,7 @@ línea del sitio sabe que Netlify existe. Hace dos cosas:
 
 `dist/` y `.netlify` están en `.gitignore`.
 
-### Por qué hay un paso de build para un sitio de un archivo
+### Por qué hay un paso de build para un sitio de archivos estáticos
 
 Porque **la raíz del repositorio no es publicable**. Al lado del sitio viven:
 
@@ -44,9 +53,11 @@ Ninguna de las dos la cita el sitio — se comprobó: **cero menciones** a
 accesibles por URL adivinable, incluido un PDF con información interna del
 cliente. El build publica 2,3 MB en vez de 17 MB, y lo hace por esto.
 
-### Lo que está medido, y cómo
+### Lo que está medido, y cómo — acta del 23 de agosto de 2026
 
-Lo verificado el 23 de agosto de 2026, sirviendo `dist/` en un servidor local:
+**Vale como acta de ese día, no como control vigente:** se midió cuando el sitio
+era una sola página y 36 imágenes. Lo verificado entonces, sirviendo `dist/` en
+un servidor local:
 
 - **Las 36 imágenes que el HTML cita son exactamente las 36 que hay en `img/`.**
   Ni una ruta rota, ni un archivo de más.
@@ -245,9 +256,29 @@ resultados opuestos: la diferencia la pone qué sirve las rutas.
 ```
 
 Que una carpeta no esté en `dist/` en el disco no prueba que no esté publicada:
-hay que pedírsela al servidor. El despliegue subió **38 archivos** —
-`index.html`, las 36 imágenes y `robots.txt`—, que es la cuenta exacta y ni uno
+hay que pedírsela al servidor. Ese despliegue subió **38 archivos** —
+`index.html`, las 36 imágenes y `robots.txt`—, que era la cuenta exacta y ni uno
 más.
+
+### Qué hay que volver a comprobar en el próximo despliegue
+
+El sitio pasó de una página a cuatro, así que la cuenta cambió y estas
+comprobaciones están **pendientes, no hechas**:
+
+- **52 archivos** en el despliegue: los cuatro HTML (`index.html`,
+  `terapeutas.html`, `servicios.html`, `conocenos.html`), las 47 imágenes y
+  `robots.txt`. Ni uno más.
+- Un `200` por cada página interior, que en agosto no existían:
+  `/terapeutas.html`, `/servicios.html` y `/conocenos.html`.
+- Los mismos `404` de control: `/Referencias/…`, `/Resources/…`, `/README.md`, y
+  `/centro-iluminate-sitio.html`, que sigue redirigiendo 301 a `/`.
+- `curl -sI https://<sitio>.netlify.app | grep -i x-robots-tag`, que en agosto
+  quedó sin verificar.
+
+Y una nota de contenido, no de despliegue: `conocenos.html` lleva hoy marcas
+visibles de datos que el centro todavía no entregó (el distintivo `.falta`).
+**Antes de enseñar la URL como versión final hay que revisar que no quede
+ninguna** — `grep -n 'class="falta' conocenos.html`.
 
 ### Para refrescar la URL más adelante
 

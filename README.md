@@ -6,11 +6,18 @@ Santiago de Chile.
 
 ## Cómo abrirlo
 
-El sitio es un único archivo autocontenido. No hay dependencias, ni build, ni
-servidor: basta abrir `centro-iluminate-sitio.html` en el navegador.
+Son cuatro archivos autocontenidos que se enlazan entre sí. No hay dependencias,
+ni build, ni servidor: basta abrir `centro-iluminate-sitio.html` en el navegador
+y moverse por el menú, que lleva a las otras tres.
 
 ```
-centro-iluminate-sitio.html   Sitio completo (HTML + CSS + JS en línea, ~160 KB)
+centro-iluminate-sitio.html   Página de inicio (HTML + CSS + JS en línea, ~160 KB)
+terapeutas.html               Página del equipo terapéutico: filtros por especialidad,
+                              fichas y ventana de perfil (~180 KB)
+servicios.html                Servicios y aranceles: terapias, evaluaciones, programas
+                              completos y apoyos para la familia (~160 KB)
+conocenos.html                «La carta de Gloria»: la historia de la fundadora, el
+                              propósito del centro y el grupo de mamás azules (~160 KB)
 img/                          Imágenes optimizadas en WebP y SVG que usa el sitio
 Resources/                    Archivos originales (fotos, logos, figuras decorativas)
 Referencias/                  Brief del centro, paleta, inspiración visual y logos
@@ -44,6 +51,50 @@ material interno del cliente.
 Portada · Respaldo (mosaico de cifras) · Nosotros · Terapias · Carril del equipo
 terapéutico · Diagnóstico (ADOS-2, ABLLS-R, IVADEC) · Servicios · Principios ·
 Espacio (galería) · Convenios · Contacto · Pie
+
+## Página de terapeutas
+
+`terapeutas.html` comparte con la portada la fuente, las variables, la cabecera,
+el menú fijo y el pie —copiados tal cual—, así que **un cambio en la cabecera o
+el pie de la portada hay que repetirlo en las otras tres**. Son doce listas de
+enlaces en total: cabecera, barra fija y columna «Explora» del pie, por archivo. Lo propio de la página: filtros
+por especialidad, una ficha por profesional y una sola ventana `<dialog>` de
+perfil que se arma con el `<template>` que cada ficha lleva dentro. Siete de
+las nueve fichas ya llevan fotografía en `img/terapeutas/`; las dos que faltan
+—las de iniciales «CV» y «JH»— siguen con el retrato provisional, iniciales
+sobre un degradado, hasta que llegue la foto oficial.
+
+## Página Conócenos
+
+`conocenos.html` sale del esqueleto de `servicios.html` —el más nuevo— y se lee
+como una carta de Gloria Del Villar a quien acaba de llegar al sitio: papel,
+capitular, una nota al margen, una nota al pie, despedida y posdata. Diez
+secciones con una curva tonal deliberada, donde la única banda oscura es la del
+grupo de mamás azules. No agrega ni una línea de JavaScript: usa los tres
+guiones que ya trae el sitio.
+
+Lo que el centro todavía no nos ha dado va marcado en la página con el
+distintivo `.falta` (o `.falta-bloque`) y con un comentario `PENDIENTE` en el
+HTML. **Ninguna de esas marcas puede sobrevivir a la publicación.** Cada sección
+está armada para poder borrarse entera sin que se note.
+
+La lista al día no se escribe acá —se desfasa en cuanto se agrega una marca—
+sino que se le pide al archivo:
+
+```
+grep -n 'class="falta' conocenos.html      # los distintivos visibles
+grep -n 'PENDIENTE' conocenos.html         # los comentarios para quien edita
+```
+
+Dos compromisos que se anotan acá y no en la cabeza de nadie:
+
+- El retrato de Gloria entra como `img/gloria-del-villar.webp` y reemplaza una
+  sola línea: el `<div class="retrato-pendiente">` de la sección «Quién te
+  escribe». La placa ocupa exactamente la misma caja, así que no hay que tocar
+  el CSS.
+- La mención de Gloria como **mamá azul** va con su consentimiento escrito y es
+  **reversible**: su hijo va a crecer, y el día que él pida que salga, sale sin
+  discusión.
 
 ## Sistema de diseño
 

@@ -31,8 +31,9 @@
   --nogal:#8A6540; --nogal-osc:#4A3521;
   /* arcilla — bandas de sección (antes marrón oscuro) */
   --arcilla:#C2B09B;
-  /* tinta */
-  --tinta:#2B3648;
+  /* tinta: texto de lectura. Era un azul de tinta (#2B3648) de la primera paleta;
+     ahora es el marrón oscuro del sitio, el mismo de --nogal-osc */
+  --tinta:#4A3521;
   /* acentos */
   --miel:#E3B23C; --miel-suave:#F7E3B0; --turquesa:#79C0CA;
   --titulo:#663F2E;
@@ -108,6 +109,17 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 .tira-msj.activo{opacity:1;transform:none;pointer-events:auto}
 .tira-msj.saliendo{opacity:0;transform:translateY(-115%)}
 .tira-bar{margin:0 .7rem;opacity:.45}
+/* flechas para pasar los mensajes a mano: van ANTES del visor, pegadas al
+   mensaje (el margen negativo descuenta parte del gap de .tira-cols), así se
+   leen como parte de él y no se confunden con el horario de la derecha */
+.tira-ctrl{flex:none;display:flex;align-items:center;gap:.3rem;margin-right:-.6rem}
+.tira-flecha{display:grid;place-items:center;width:1.45rem;height:1.45rem;padding:0;
+  border:0;border-radius:50%;background:transparent;
+  color:inherit;cursor:pointer;
+  transition:background .25s ease,border-color .25s ease,color .25s ease}
+.tira-flecha:hover{background:rgba(239,227,214,.16);color:#fff}
+.tira-flecha:focus-visible{outline:2px solid var(--boton);outline-offset:2px}
+.tira-flecha svg{width:.78rem;height:.78rem}
 .tira a{color:#fff;font-weight:700;text-decoration:none;margin-left:.35rem}
 .tira a:hover{text-decoration:underline}
 .tira-horario{flex:none;display:flex;align-items:center;gap:.5rem;margin:0;white-space:nowrap}
@@ -115,10 +127,12 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 /* el sabado es lo primero que sobra cuando la tira se estrecha: por debajo
    de ~740px el mensaje que rota a la izquierda chocaria con el horario
    (medido: a 820px aun quedan ~80px de aire entre los dos) */
-@media(max-width:800px){.tira-sab{display:none}}
+@media(max-width:900px){.tira-sab{display:none}}
 @media(max-width:560px){
   .tira{font-size:.72rem}
   .tira-visor{height:3.3rem}
+  /* en el dedo, un blanco un poco más grande */
+  .tira-flecha{width:1.85rem;height:1.85rem}
   /* el horario cedería demasiado ancho a los mensajes que rotan */
   .tira-horario{display:none}
 }
@@ -325,7 +339,11 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 @media(max-width:700px){.planta-deco{width:120px;opacity:.7}}
 /* niño caminando: asoma casi entero por la esquina inferior derecha, cortado
    por el borde, en espejo de la planta de la esquina superior izquierda */
-#nosotros{padding-bottom:clamp(11rem,16vw,17rem)}
+/* `overflow-x:clip` corta al niño y a la planta en el borde de la sección:
+   sin él la foto, que asoma a propósito por la derecha, ensanchaba la página
+   y en el celular se podía arrastrar hacia el costado (24px a 390, 31px a 768).
+   `clip` y no `hidden`: no crea caja de scroll ni recorta en vertical */
+#nosotros{padding-bottom:clamp(11rem,16vw,17rem);overflow-x:clip}
 @media(max-width:700px){#nosotros{padding-bottom:13rem}}
 .nino-deco{position:absolute;bottom:clamp(.8rem,2vw,1.8rem);right:clamp(-64px,-4vw,-28px);
   width:clamp(230px,30vw,470px);aspect-ratio:747/592;pointer-events:none;z-index:0;
@@ -368,13 +386,21 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 
 /* ── carril de terapias ── */
 /* el carril ya no se pega al listado: ambas secciones llevan su espaciado propio */
-#equipo-terapeutico{padding-top:clamp(4.5rem,8vw,7rem)}
+/* `overflow-x:clip`: al rotar, las tarjetas viajan de lado (FLIP con
+   translateX) y la que sale por la derecha ensanchaba la página un instante;
+   en el celular eso basta para que la vista quede corrida para siempre */
+#equipo-terapeutico{padding-top:clamp(4.5rem,8vw,7rem);overflow-x:clip}
 /* la tarjeta activa marca la altura de toda la franja; el texto vive en el
    hueco que deja a su derecha, alineado con su borde superior, para que
    rótulo y carril se lean como una sola pieza */
 .carril-zona{position:relative;--gap:clamp(.55rem,1.3vw,1.05rem);
   --alto-activa:clamp(400px,42vw,520px);
-  --alto-inactiva:clamp(190px,20vw,250px)}
+  /* el texto vive en el hueco entre la activa y las inactivas: ese hueco
+     tiene que alcanzar para la descripción más larga (Psicología
+     infanto-juvenil) MÁS el renglón de quién atiende. Con el tope en 250px le
+     faltaban 6-9px y el «disponible» se montaba en las tarjetas (medido a
+     1280-1440); con 225px sobran ~10 */
+  --alto-inactiva:clamp(190px,17vw,225px)}
 .carril-cab{position:absolute;top:clamp(.2rem,.8vw,.6rem);right:0;
   left:calc((100% - 4 * var(--gap)) / 5 + var(--gap) + clamp(1.4rem,3vw,3rem));
   display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem}
@@ -505,6 +531,17 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
   border:6px solid transparent;border-top-color:var(--titulo)}
 .test-info:hover .test-burbuja,
 .test-info:focus-within .test-burbuja{opacity:1;visibility:visible;transform:translate(-50%,0)}
+/* En el teléfono el «i» queda pegado al borde derecho y la burbuja centrada
+   sobre él se salía de la pantalla —y aun invisible ensanchaba la página 43px—.
+   Ahí se ancla por la DERECHA del botón y crece hacia la izquierda; la
+   flechita se corre para seguir apuntando al centro del «i» (11px + 8px). */
+@media(max-width:700px){
+  .test-burbuja{left:auto;right:-8px;transform:translate(0,4px);
+    max-width:min(15rem,calc(100vw - 3rem))}
+  .test-burbuja::after{left:auto;right:13px;margin-left:0}
+  .test-info:hover .test-burbuja,
+  .test-info:focus-within .test-burbuja{transform:translate(0,0)}
+}
 /* la pregunta que encabeza la descripción */
 .test-panel .test-sub{font-family:var(--display);font-style:italic;
   font-size:1.08rem;color:var(--titulo);line-height:1.35;margin:0 0 .55rem}
@@ -601,15 +638,23 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 .galeria .alta{grid-row:span 2}
 .galeria figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.4rem 1.1rem .9rem;
   font-size:.82rem;font-weight:600;color:#fff;letter-spacing:.03em;
-  background:linear-gradient(transparent,rgba(43,54,72,.72))}
+  background:linear-gradient(transparent,rgba(48,32,22,.72))}
 
 /* ── convenios ── */
 #convenios .enc .bajada{margin-top:clamp(1rem,1.8vw,1.5rem)}
 /* cuatro tarjetas en cacao: foto de ambiente, sello blanco con el logo posado
    encima, cifra en oro y descripción — las bases se alinean con grid-auto-rows */
-.convenios{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem}
-@media(max-width:900px){.convenios{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.convenios{grid-template-columns:1fr;max-width:22rem;margin-inline:auto}}
+/* tres convenios: la grilla se acota para que las tarjetas no se estiren más
+   de lo que medían de a cuatro, y en dos columnas la tercera va centrada */
+.convenios{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;max-width:58rem;margin-inline:auto}
+@media(max-width:900px){
+  .convenios{grid-template-columns:repeat(2,1fr)}
+  .convcard:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - .55rem)}
+}
+@media(max-width:520px){
+  .convenios{grid-template-columns:1fr;max-width:22rem}
+  .convcard:last-child:nth-child(odd){width:auto;justify-self:stretch}
+}
 /* overflow:hidden recorta la foto contra los radios de la tarjeta: va de borde a borde */
 .convcard{text-align:center;border-radius:var(--r);padding:0 0 1.6rem;overflow:hidden;
   background:radial-gradient(120% 60% at 50% 100%,rgba(227,178,60,.12),transparent 62%),#3E2A1F;
@@ -724,6 +769,12 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 .horario div{display:flex;justify-content:space-between;gap:1.4rem;padding:.42rem 0}
 .horario span:first-child{color:var(--desc);flex:none}
 .horario span:last-child{font-weight:600;color:var(--titulo);text-align:right;line-height:1.55}
+/* en angosto no caben rótulo y valor en un renglón y el valor se partía
+   dejando la «h» sola: se apilan, los dos a la izquierda */
+@media(max-width:520px){
+  .horario div{flex-direction:column;gap:.1rem}
+  .horario span:last-child{text-align:left}
+}
 
 /* ── footer ── */
 /* cacao un punto más profundo que las bandas: el pie cierra y asienta la página */
@@ -750,11 +801,12 @@ footer a:hover{color:var(--boton)}
 }
 @media(max-width:480px){.pie-cols{grid-template-columns:1fr}}
 /* versión reducida del logotipo: isotipo + nombre armados aquí mismo */
-.pie-logo{display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1.35rem}
-.pie-logo svg{width:42px;height:auto;flex:none}
-.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.45rem;line-height:1;
+.pie-logo{display:inline-flex;align-items:center;gap:1.05rem;margin-bottom:1.35rem}
+.pie-logo img{width:80px;height:80px;flex:none;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 1px rgba(239,227,214,.14)}
+.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.9rem;line-height:1;
   letter-spacing:-.01em;color:#FFF7EE;display:block}
-.pie-logo small{display:block;margin-top:.28rem;font-size:.58rem;font-weight:600;
+.pie-logo small{display:block;margin-top:.34rem;font-size:.76rem;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;color:var(--boton)}
 .pie-frase{max-width:36ch;line-height:1.75;margin:0 0 1.3rem}
 /* el ícono no debe empujar las dos líneas: se alinea con la primera */
@@ -1073,17 +1125,73 @@ a.serv{display:block}
    Se arregla quitando la causa, no subiendo el numero: en movil el bloque
    vuelve al flujo normal y ocupa lo que necesite. Encima queda imposible por
    construccion, no por haber acertado la cifra. */
-@media(max-width:700px){
+/* hasta 1100px: entre 981 y 1100 el hueco junto a la activa también se
+   quedaba corto (el texto pisaba las tarjetas 2 a 45px, medido) */
+@media(max-width:1100px){
   .carril-zona{padding-top:0}
   .carril-cab{position:static;margin-bottom:1.5rem}
+}
+/* en el teléfono las tarjetas inactivas miden ~110px: el rótulo baja de
+   tamaño y espaciado, y las palabras largas se parten por los guiones
+   blandos (&shy;) del marcado —«ODONTO-PEDIATRÍA»— en vez de cortarse */
+@media(max-width:640px){
+  .carril-rot{padding:.4rem;font-size:.64rem;letter-spacing:.03em;line-height:1.3;
+    -webkit-hyphens:manual;hyphens:manual}
+  /* las flechas dejan de ser una columna (le robaban 100px a la descripción,
+     que quedaba en una tira angosta) y suben a la esquina, a la altura de la
+     cejilla; sólo la cejilla y el nombre se apartan de ellas */
+  .carril-cab{position:relative;display:block}
+  .carril-flechas{position:absolute;top:-.55rem;right:0;padding-top:0}
+  .carril-txt .cejilla,.carril-txt h2{padding-right:6.2rem}
 }
 /* ── barra fija con cinco páginas ──
    «Conócenos» suma un ítem a .sticky-enlaces (gap 2.2rem, mayúsculas,
    letter-spacing .09em) dentro de una rejilla 1fr auto 1fr que ya lleva la
    marca a la izquierda y el botón de WhatsApp a la derecha: con cinco
    desborda el .env entre ~821 y ~950px de pantalla. */
-@media(max-width:1020px){
-  .sticky-enlaces{gap:1.4rem}
+@media(max-width:1100px){
+  .sticky-enlaces{gap:1.2rem}
+}
+/* El botón de WhatsApp se partía en dos o tres renglones entre 821 y 1099px
+   (medido) y engordaba la barra. Va siempre en un renglón; y donde ni con los
+   enlaces juntos cabe entero (821-940px) queda sólo el ícono, en un círculo.
+   El texto no se borra del marcado: `font-size:0` lo esconde a la vista pero
+   los lectores de pantalla lo siguen leyendo como nombre del enlace. */
+.sticky-cta{white-space:nowrap}
+/* la bajada de la marca se partía en dos renglones a ~821-880px */
+.sticky-marca small{white-space:nowrap}
+@media(min-width:821px) and (max-width:940px){
+  .sticky-cta{font-size:0;gap:0;padding:.7rem}
+  .sticky-cta svg{width:18px;height:18px}
+}
+
+/* ── volver arriba ──
+   Aparece pasada la primera pantalla y lleva de vuelta al inicio. Amarillo de
+   botones para que se lea igual sobre beige, sobre las bandas oscuras y sobre
+   el pie. z-index bajo la cabecera fija (110) y los diálogos (capa superior). */
+.subir{position:fixed;z-index:105;right:clamp(1rem,2.4vw,1.8rem);bottom:clamp(1rem,2.4vw,1.8rem);
+  width:3rem;height:3rem;display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:var(--boton);color:var(--titulo);cursor:pointer;
+  box-shadow:0 12px 26px -12px rgba(74,53,33,.6),0 0 0 1px rgba(74,53,33,.08);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .35s ease,visibility .35s ease,transform .35s cubic-bezier(.22,1,.36,1),background .25s ease}
+.subir.visible{opacity:1;visibility:visible;transform:none}
+.subir.visible:hover{background:var(--miel);transform:translateY(-3px)}
+.subir:focus-visible{outline:2px solid var(--nogal-osc);outline-offset:3px}
+.subir svg{width:1.3rem;height:1.3rem}
+
+/* ── responsive común ──
+   Cejilla centrada: si el texto no cabe en un renglón, la rayita quedaba
+   pegada a la izquierda de un bloque de dos líneas. En angosto la rayita
+   sube y queda centrada SOBRE el texto, que se ve igual de intencional con
+   una línea o con dos.
+   Títulos: los <br> que ordenan el renglón en escritorio dejan palabras
+   sueltas en un teléfono («cada / niño / a iluminar»). En angosto se ignoran
+   y el navegador equilibra los renglones él solo. */
+@media(max-width:560px){
+  .enc.centro .cejilla{flex-direction:column;gap:.55rem;text-align:center;text-wrap:balance}
+  main h1 br,main h2 br{display:none}
+  main h1,main h2{text-wrap:balance}
 }
 </style>
 </head>
@@ -1098,9 +1206,13 @@ a.serv{display:block}
        entre ellos), a la derecha el horario, siempre visible -->
   <div class="tira">
     <div class="env tira-cols">
+      <div class="tira-ctrl">
+        <button class="tira-flecha" type="button" data-dir="-1" aria-label="Mensaje anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+        <button class="tira-flecha" type="button" data-dir="1" aria-label="Mensaje siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
       <div class="tira-visor">
         <span class="tira-msj activo">Av. Las Condes 10.415, of. 9<span class="tira-bar" aria-hidden="true">|</span><a href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank" rel="noopener">Encuéntranos en Google Maps <span aria-hidden="true">&#8594;</span></a></span>
-        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56975813632">+56 9 7581 3632</a></span>
+        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56926122138">+56 9 2612 2138</a></span>
       </div>
       <p class="tira-horario">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
@@ -1168,7 +1280,7 @@ a.serv{display:block}
         <li><a href="#contacto">Contacto</a></li>
       </ul>
     </nav>
-    <a class="btn btn-p sticky-cta" href="https://wa.me/56975813632" target="_blank"
+    <a class="btn btn-p sticky-cta" href="https://wa.me/56926122138" target="_blank"
       rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Reserva por WhatsApp</a>
   </div>
 </div>
@@ -1181,8 +1293,8 @@ a.serv{display:block}
   <div class="hero-halo" aria-hidden="true"></div>
   <div class="env">
     <div class="hero-txt">
-      <h1 class="h-xl">Acompañando a cada niño<br>a iluminar <span class="luzp">a su manera</span></h1>
-        <a class="btn btn-p hero-cta" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20reservar%20una%20hora%20en%20Centro%20Ilum%C3%ADnate"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>Reserva por WhatsApp</a>
+      <h1 class="h-xl">Acompañando a cada niño <br>a&nbsp;iluminar <span class="luzp">a su manera</span></h1>
+        <a class="btn btn-p hero-cta" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20reservar%20una%20hora%20en%20Centro%20Ilum%C3%ADnate"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>Reserva por WhatsApp</a>
     </div>
   </div>
 </section>
@@ -1247,7 +1359,7 @@ a.serv{display:block}
   <span class="nino-deco" role="img" aria-label="Junto a ti en todo el camino"></span>
   <div class="env" style="position:relative;z-index:1">
     <div class="enc centro amplio rev">
-      <h2 class="h-l">Entendemos lo que significa<br>buscar el espacio correcto.</h2>
+      <h2 class="h-l">Entendemos lo que significa <br>buscar el espacio correcto.</h2>
       <p class="bajada">Sea que estés dando tus primeros pasos ante una duda, que ya cuentes
         con un diagnóstico o que lleves tiempo buscando el espacio adecuado para tu familia,
         sabemos que transitar el neurodesarrollo puede despertar muchas preguntas. No tienen
@@ -1343,11 +1455,11 @@ a.serv{display:block}
       </button>
       <button class="carril-card" type="button">
         <img src="img/psicopedagogia.webp" alt="Psicopedagoga leyendo cuentos junto a una niña sentada en la alfombra de una sala de terapia" style="object-position:bottom;transform:scale(1.4)">
-        <span class="carril-rot">Psicopedagogía</span>
+        <span class="carril-rot">Psico&shy;pedagogía</span>
       </button>
       <button class="carril-card" type="button">
         <img src="img/fonoaudiologia.webp" alt="Fonoaudióloga modelando la articulación de un sonido frente a una niña, en la sala de terapia">
-        <span class="carril-rot">Fonoaudiología</span>
+        <span class="carril-rot">Fono&shy;audiología</span>
       </button>
       <button class="carril-card" type="button">
         <img src="img/psicologia.webp" alt="Psicóloga acompañando a una niña que dibuja sobre una mesa baja, en una sala luminosa">
@@ -1355,7 +1467,7 @@ a.serv{display:block}
       </button>
       <button class="carril-card" type="button">
         <img src="img/odontopediatria.webp" alt="Odontóloga mostrando un modelo dental con un peluche a una niña, en el gimnasio sensorial al aire libre">
-        <span class="carril-rot">Odontopediatría adaptada</span>
+        <span class="carril-rot">Odonto&shy;pediatría adaptada</span>
       </button>
     </div>
     </div>
@@ -1422,7 +1534,7 @@ a.serv{display:block}
         <p class="test-sub">¿Presenta características del espectro autista?</p>
         <p>Es el instrumento de referencia internacional para evaluar y apoyar el diagnóstico del espectro autista (TEA). A través de actividades estructuradas y juego, un profesional certificado evalúa aspectos clave del desarrollo socioemocional y la comunicación, respetando en todo momento sus tiempos y su comodidad. Al finalizar se entrega un informe con respaldo clínico que sirve ante colegios e instituciones de salud.</p>
         <div class="test-acciones">
-          <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ADOS-2"
+          <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ADOS-2"
             target="_blank" rel="noopener">Solicitar Test</a>
           <!-- "Conoce más" queda sin destino hasta que exista la página del test -->
           <button class="btn btn-txt" type="button">Conoce más
@@ -1444,7 +1556,7 @@ a.serv{display:block}
         <p class="test-sub">¿Qué habilidades domina y cuáles debemos trabajar?</p>
         <p>Es una herramienta que permite medir las habilidades de lenguaje, aprendizaje y autonomía. Con esto determinamos qué habilidades específicas tiene y cuáles necesita aprender para desenvolverse mejor en su día a día. De ahí, diseñamos el programa de terapia requerido (fonoaudiología, psicopedagogía, otros) y medimos avances en el tiempo.</p>
         <div class="test-acciones">
-          <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ABLLS-R"
+          <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ABLLS-R"
             target="_blank" rel="noopener">Solicitar Test</a>
           <!-- "Conoce más" queda sin destino hasta que exista la página del test -->
           <button class="btn btn-txt" type="button">Conoce más
@@ -1466,7 +1578,7 @@ a.serv{display:block}
         <p class="test-sub">¿Cuál es el nivel de apoyo que necesita para desenvolverse en su vida cotidiana?</p>
         <p>Es la evaluación oficial, según estándares OMS/MINSAL, que evalúa el funcionamiento y desempeño del menor en áreas como aprendizaje, comunicación, movilidad y relaciones interpersonales, midiendo su impacto en el día a día. Este informe es necesario para respaldar la tramitación de la Credencial de Discapacidad ante el COMPIN, facilitando el acceso a ajustes escolares, beneficios del Estado y adecuaciones para la PAES.</p>
         <div class="test-acciones">
-          <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20IVADEC"
+          <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20IVADEC"
             target="_blank" rel="noopener">Solicitar Test</a>
           <!-- "Conoce más" queda sin destino hasta que exista la página del test -->
           <button class="btn btn-txt" type="button">Conoce más
@@ -1488,7 +1600,7 @@ a.serv{display:block}
         <p class="test-sub">¿Cómo aprende, razona y procesa la información?</p>
         <p>Es la escala clínica estandarizada de referencia internacional para evaluar el perfil cognitivo en niños y adolescentes de 6 a 16 años. Nos permite identificar fortalezas de aprendizaje, altas capacidades o áreas que requieren apoyos específicos, entregando una guía clara para la familia y la escuela.</p>
         <div class="test-acciones">
-          <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WISC-V"
+          <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WISC-V"
             target="_blank" rel="noopener">Solicitar Test</a>
           <!-- "Conoce más" queda sin destino hasta que exista la página del test -->
           <button class="btn btn-txt" type="button">Conoce más
@@ -1510,7 +1622,7 @@ a.serv{display:block}
         <p class="test-sub">¿Cómo procesa la información en esta etapa de la vida?</p>
         <p>Es el estándar clínico internacional para evaluar el perfil cognitivo en adolescentes desde los 16 años y adultos. Permite conocer con precisión el funcionamiento intelectual, identificar altas capacidades o desafíos específicos y guiar ajustes para el ámbito académico, laboral o personal.</p>
         <div class="test-acciones">
-          <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WAIS-IV"
+          <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WAIS-IV"
             target="_blank" rel="noopener">Solicitar Test</a>
           <!-- "Conoce más" queda sin destino hasta que exista la página del test -->
           <button class="btn btn-txt" type="button">Conoce más
@@ -1658,20 +1770,10 @@ a.serv{display:block}
             aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg>
         </button>
       </article>
-      <article class="convcard">
-        <div class="convcard-foto"><img src="img/conv-fondo-cpadres.webp" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>
-        <div class="convcard-sello">
-          <img src="img/conv-cpadres.webp" alt="Logotipo del Centro de Padres de los colegios Padre Hurtado y Juanita de los Andes" loading="lazy" decoding="async">
-        </div>
-        <p class="convcard-nombre">Centro de Padres CPH-CJA</p>
-        <p class="convcard-off">15% de descuento</p>
-        <p class="convcard-desc">En evaluaciones y terapias para la comunidad del Centro
-          de Padres CPH CJA.</p>
-      </article>
     </div>
     <p class="conv-nota rev">Para activar tu beneficio, sólo menciona tu institución al reservar.<br>
       ¿Representas a una organización y te gustaría sumar un convenio?
-      <a href="https://wa.me/56975813632?text=Hola%2C%20me%20interesa%20conversar%20sobre%20un%20convenio%20institucional">Conversemos</a></p>
+      <a href="https://wa.me/56926122138?text=Hola%2C%20me%20interesa%20conversar%20sobre%20un%20convenio%20institucional">Conversemos</a></p>
   </div>
 
   <!-- ventana emergente: lista de colegios adheridos al convenio -->
@@ -1768,24 +1870,24 @@ a.serv{display:block}
   <div class="env contacto">
     <div class="rev">
       <p class="cejilla c-arcilla">Conversemos</p>
-      <h2 class="h-l">El primer paso<br>es sólo un mensaje.</h2>
+      <h2 class="h-l">El primer paso <br>es sólo un mensaje.</h2>
       <ul class="datos">
         <li><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg></span><div><b>WhatsApp</b>
-          <a href="https://wa.me/56975813632">+56 9 7581 3632</a></div></li>
+          <a href="https://wa.me/56926122138">+56 9 2612 2138</a></div></li>
         <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg></span><div><b>Correo</b>
-          <a href="mailto:contacto@centroiluminate.cl">contacto@centroiluminate.cl</a></div></li>
+          <a href="mailto:coachingiluminate@gmail.com">coachingiluminate@gmail.com</a></div></li>
         <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span><div><b>Dirección</b>
           <a href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank" rel="noopener">Av. Las Condes 10.415, oficina 9 — Las Condes</a><br>
-          <span style="color:var(--boton);font-size:.85rem;font-weight:600">Estacionamiento gratis para pacientes (piso -1)</span></div></li>
+          <span style="color:var(--boton);font-size:.85rem;font-weight:600">Estacionamiento gratis para pacientes (piso -5)</span></div></li>
         <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></span><div><b>Instagram</b>
-          <a href="https://instagram.com/centroiluminate">@centroiluminate</a></div></li>
+          <a href="https://instagram.com/centroiluminate" target="_blank" rel="noopener">@centroiluminate</a></div></li>
       </ul>
     </div>
     <div class="tarjeta-wa rev">
       <h3>¿Recién estás partiendo?</h3>
       <p>No necesitas tener el diagnóstico listo, ni los informes ordenados, ni saber
         qué terapia pedir. Escríbenos y te orientamos por dónde empezar.</p>
-      <a class="btn btn-p" href="https://wa.me/56975813632" style="margin-top:.4rem">
+      <a class="btn btn-p" href="https://wa.me/56926122138" style="margin-top:.4rem">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Escribir por WhatsApp</a>
       <div class="horario">
         <div><span>Horario de atención</span><span>Lun a Vie: 9:00 a 20:00 h<br>Sábado: 9:00 a 17:00 h</span></div>
@@ -1803,10 +1905,7 @@ a.serv{display:block}
 
       <div class="pie-marca">
         <a class="pie-logo" href="#inicio" aria-label="Ilumínate, Centro de Terapias — ir al inicio">
-          <svg viewBox="0 0 539 461" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M380.589 11.3553C398.352 9.64492 414.139 22.6583 415.849 40.4211L426.525 151.29C433.003 148.274 440.095 146.289 447.613 145.565C483.138 142.144 514.711 168.17 518.132 203.696C521.553 239.221 495.526 270.793 460 274.214C452.482 274.938 445.142 274.342 438.207 272.618L449.399 388.849C451.109 406.611 438.096 422.397 420.333 424.107L71.9063 457.657C54.1434 459.367 38.357 446.354 36.6466 428.591L3.09692 80.1646C1.38659 62.4018 14.3999 46.6153 32.1628 44.905L380.589 11.3553Z" fill="#FDE34D" style="fill:#FDE34D;fill:color(display-p3 0.9922 0.8902 0.3020);fill-opacity:1;"/>
-            <path d="M167.842 117.984L171.725 117.61L189.866 116.576C206.597 115.203 223.305 113.594 239.99 111.75L257.995 109.304L261.878 108.93L264.93 140.627L254.592 140.554C241.178 141.845 243.965 141.933 241.209 142.911L238.84 144.208L238.202 144.982L254.972 319.146L255.746 319.784L258.319 320.605C261.211 321.039 258.492 321.657 271.906 320.365L282.04 318.321L285.092 350.018L281.209 350.392L263.068 351.426C246.337 352.8 229.63 354.408 212.944 356.253L194.939 358.699L191.056 359.073L188.004 327.375L198.342 327.449C211.756 326.157 208.969 326.069 211.725 325.091L214.094 323.794L214.732 323.02L197.962 148.857L197.188 148.219L194.615 147.398C191.723 146.963 194.442 146.345 181.028 147.637L170.894 149.682L167.842 117.984Z" fill="#114388" style="fill:#114388;fill:color(display-p3 0.0667 0.2627 0.5333);fill-opacity:1;"/>
-          </svg>
+          <img src="img/logotipo-circular-centro-iluminate.webp" alt="" width="560" height="560" loading="lazy" decoding="async">
           <span>
             <b>ilumínate</b>
             <small>Centro de Terapias</small>
@@ -1819,7 +1918,7 @@ a.serv{display:block}
             rel="noopener" aria-label="Instagram de Centro Ilumínate"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></a>
           <a class="pie-red" href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank"
             rel="noopener" aria-label="Ver la ubicación del centro en Google Maps"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s7-6.6 7-11.5a7 7 0 1 0-14 0c0 4.9 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.7"/></svg></a>
-          <a class="pie-red" href="https://wa.me/56975813632" target="_blank"
+          <a class="pie-red" href="https://wa.me/56926122138" target="_blank"
             rel="noopener" aria-label="Escribir por WhatsApp"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg></a>
         </div>
       </div>
@@ -1868,6 +1967,8 @@ a.serv{display:block}
     </div>
   </div>
 </footer>
+
+<button class="subir" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5.5"/><path d="M5.5 12 12 5.5 18.5 12"/></svg></button>
 
 <script>
 (function(){  // menú móvil
@@ -2130,22 +2231,44 @@ a.serv{display:block}
   window.addEventListener('scroll', pintar, {passive:true});
   pintar();   // por si la página carga ya desplazada (anclas)
 })();
-(function(){  // tira: rota un mensaje a la vez
+(function(){  // tira: rota un mensaje a la vez; las flechas lo cambian a mano
   var tira = document.querySelector('.tira');
   var msjs = tira ? Array.prototype.slice.call(tira.querySelectorAll('.tira-msj')) : [];
   if (msjs.length < 2) return;
   var i = 0, reloj = null;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function pasar(){
+  // hacia adelante el siguiente sube desde abajo (el relevo de siempre); hacia
+  // atrás el anterior baja desde arriba, para que el movimiento siga a la flecha
+  function pasar(dir){
+    dir = dir || 1;
     var sale = msjs[i];
-    i = (i + 1) % msjs.length;
+    i = (i + dir + msjs.length) % msjs.length;
+    var entra = msjs[i];
     sale.classList.remove('activo');
-    sale.classList.add('saliendo');
-    setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
-    msjs[i].classList.add('activo');
+    if (dir > 0){
+      sale.classList.add('saliendo');
+      setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
+    } else {
+      // el que entra arranca arriba sin transición; el que sale vuelve solo
+      // a su sitio de reposo, abajo
+      entra.classList.remove('saliendo');
+      entra.style.transition = 'none';
+      entra.style.transform = 'translateY(-115%)';
+      void entra.offsetWidth;
+      entra.style.transition = entra.style.transform = '';
+    }
+    entra.classList.add('activo');
   }
   function arrancar(){ if (!reloj && !reduce) reloj = setInterval(pasar, 5200); }
   function parar(){ if (reloj) { clearInterval(reloj); reloj = null; } }
+  Array.prototype.forEach.call(tira.querySelectorAll('.tira-flecha'), function(b){
+    b.addEventListener('click', function(){
+      pasar(+b.getAttribute('data-dir'));
+      // en táctil no hay hover que pause: se reinicia la cuenta para que el
+      // mensaje elegido no se vaya enseguida
+      if (reloj) { parar(); arrancar(); }
+    });
+  });
   tira.addEventListener('mouseenter', parar);
   tira.addEventListener('mouseleave', arrancar);
   tira.addEventListener('focusin', parar);
@@ -2154,6 +2277,27 @@ a.serv{display:block}
     if (document.hidden) parar(); else arrancar();
   });
   arrancar();
+})();
+
+(function(){  // volver arriba: visible pasada la primera pantalla
+  var b = document.querySelector('.subir');
+  if (!b) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pendiente = false;
+  function mirar(){
+    pendiente = false;
+    b.classList.toggle('visible', window.scrollY > window.innerHeight * .9);
+  }
+  window.addEventListener('scroll', function(){
+    if (!pendiente) { pendiente = true; requestAnimationFrame(mirar); }
+  }, {passive:true});
+  b.addEventListener('click', function(e){
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+    // con teclado (detail 0) el foco no se pierde con el botón: va al primer
+    // enlace de la página
+    if (e.detail === 0) { var s = document.querySelector('.saltar'); if (s) s.focus({preventScroll:true}); }
+  });
+  mirar();
 })();
 </script>
 </body>

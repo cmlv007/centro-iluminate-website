@@ -33,6 +33,15 @@
 # `apoyo-entre-mujeres.webp`, la fotografía del grupo de mamás azules en
 # `conocenos.html` (recorte a 1600px de ancho y calidad 80 del JPG que trajo el
 # usuario, que queda sin usar en `img/` como los demás originales).
+# El 04-10-2026 la cuenta siguió en 56, con cinco que entran y cuatro que salen:
+# entran el logotipo circular del pie (`logotipo-circular-centro-iluminate.webp`),
+# la portada y el retrato nuevos de Gloria en `conocenos.html`
+# (`gloria-del-villar-founder-portada-centro-iluminate-terapias.webp` y
+# `gloria-del-villar-founder-directora-centro-iluminate.webp`), la foto del cierre
+# de esa página (`reunion-de-mamas.webp`) y el retrato de Carla Vilberos
+# (`img/terapeutas/psicologa-carla-vilberos-centro-iluminate-terapias.webp`); salen,
+# sin borrarse de `img/`, la panorámica y el retrato anterior de Gloria y las dos
+# del convenio con el Centro de Padres (`conv-cpadres.webp`, `conv-fondo-cpadres.webp`).
 # Ni un 404, ni una huérfana. El sitio no cita `Resources/` ni `Referencias/` ni una vez.
 #
 # `portada-servicios.webp` cambió de oficio y no de archivo: era el fondo de la

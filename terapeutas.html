@@ -31,8 +31,9 @@
   --nogal:#8A6540; --nogal-osc:#4A3521;
   /* arcilla — bandas de sección (antes marrón oscuro) */
   --arcilla:#C2B09B;
-  /* tinta */
-  --tinta:#2B3648;
+  /* tinta: texto de lectura. Era un azul de tinta (#2B3648) de la primera paleta;
+     ahora es el marrón oscuro del sitio, el mismo de --nogal-osc */
+  --tinta:#4A3521;
   /* acentos */
   --miel:#E3B23C; --miel-suave:#F7E3B0; --turquesa:#79C0CA;
   --titulo:#663F2E;
@@ -113,6 +114,17 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 .tira-msj.activo{opacity:1;transform:none;pointer-events:auto}
 .tira-msj.saliendo{opacity:0;transform:translateY(-115%)}
 .tira-bar{margin:0 .7rem;opacity:.45}
+/* flechas para pasar los mensajes a mano: van ANTES del visor, pegadas al
+   mensaje (el margen negativo descuenta parte del gap de .tira-cols), así se
+   leen como parte de él y no se confunden con el horario de la derecha */
+.tira-ctrl{flex:none;display:flex;align-items:center;gap:.3rem;margin-right:-.6rem}
+.tira-flecha{display:grid;place-items:center;width:1.45rem;height:1.45rem;padding:0;
+  border:0;border-radius:50%;background:transparent;
+  color:inherit;cursor:pointer;
+  transition:background .25s ease,border-color .25s ease,color .25s ease}
+.tira-flecha:hover{background:rgba(239,227,214,.16);color:#fff}
+.tira-flecha:focus-visible{outline:2px solid var(--boton);outline-offset:2px}
+.tira-flecha svg{width:.78rem;height:.78rem}
 .tira a{color:#fff;font-weight:700;text-decoration:none;margin-left:.35rem}
 .tira a:hover{text-decoration:underline}
 .tira-horario{flex:none;display:flex;align-items:center;gap:.5rem;margin:0;white-space:nowrap}
@@ -120,10 +132,12 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 /* el sabado es lo primero que sobra cuando la tira se estrecha: por debajo
    de ~740px el mensaje que rota a la izquierda chocaria con el horario
    (medido: a 820px aun quedan ~80px de aire entre los dos) */
-@media(max-width:800px){.tira-sab{display:none}}
+@media(max-width:900px){.tira-sab{display:none}}
 @media(max-width:560px){
   .tira{font-size:.72rem}
   .tira-visor{height:3.3rem}
+  /* en el dedo, un blanco un poco más grande */
+  .tira-flecha{width:1.85rem;height:1.85rem}
   /* el horario cedería demasiado ancho a los mensajes que rotan */
   .tira-horario{display:none}
 }
@@ -323,11 +337,12 @@ footer a:hover{color:var(--boton)}
 }
 @media(max-width:480px){.pie-cols{grid-template-columns:1fr}}
 /* versión reducida del logotipo: isotipo + nombre armados aquí mismo */
-.pie-logo{display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1.35rem}
-.pie-logo svg{width:42px;height:auto;flex:none}
-.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.45rem;line-height:1;
+.pie-logo{display:inline-flex;align-items:center;gap:1.05rem;margin-bottom:1.35rem}
+.pie-logo img{width:80px;height:80px;flex:none;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 1px rgba(239,227,214,.14)}
+.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.9rem;line-height:1;
   letter-spacing:-.01em;color:#FFF7EE;display:block}
-.pie-logo small{display:block;margin-top:.28rem;font-size:.58rem;font-weight:600;
+.pie-logo small{display:block;margin-top:.34rem;font-size:.76rem;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;color:var(--boton)}
 .pie-frase{max-width:36ch;line-height:1.75;margin:0 0 1.3rem}
 /* el ícono no debe empujar las dos líneas: se alinea con la primera */
@@ -807,6 +822,11 @@ a.serv{display:block}
 .ficha-ext{margin:.15rem 0 0;font-size:.83rem;color:var(--desc);line-height:1.6;
   text-align:justify;text-wrap:pretty;
   hyphens:auto;hyphenate-limit-chars:12 5 4}
+/* en teléfono, tablet y laptop chica (hasta 1240px, donde la rejilla de
+   cuatro columnas deja fichas de ~190px de texto) la columna es tan angosta que el
+   justificado abre ríos de espacio aunque se partan las palabras largas
+   («Más   de   20   años»): ahí se lee mejor alineado a la izquierda */
+@media(max-width:1240px){.ficha-ext{text-align:left}}
 /* modalidad y días de atención; las horas exactas viven en el perfil.
    El `margin-top:auto` es lo que pega el bloque —y el pie que lo sigue— al
    borde inferior de la caja, por eso el pie ya no lo lleva. */
@@ -950,8 +970,61 @@ a.serv{display:block}
    letter-spacing .09em) dentro de una rejilla 1fr auto 1fr que ya lleva la
    marca a la izquierda y el botón de WhatsApp a la derecha: con cinco
    desborda el .env entre ~821 y ~950px de pantalla. */
-@media(max-width:1020px){
-  .sticky-enlaces{gap:1.4rem}
+@media(max-width:1100px){
+  .sticky-enlaces{gap:1.2rem}
+}
+/* El botón de WhatsApp se partía en dos o tres renglones entre 821 y 1099px
+   (medido) y engordaba la barra. Va siempre en un renglón; y donde ni con los
+   enlaces juntos cabe entero (821-940px) queda sólo el ícono, en un círculo.
+   El texto no se borra del marcado: `font-size:0` lo esconde a la vista pero
+   los lectores de pantalla lo siguen leyendo como nombre del enlace. */
+.sticky-cta{white-space:nowrap}
+/* la bajada de la marca se partía en dos renglones a ~821-880px */
+.sticky-marca small{white-space:nowrap}
+@media(min-width:821px) and (max-width:940px){
+  .sticky-cta{font-size:0;gap:0;padding:.7rem}
+  .sticky-cta svg{width:18px;height:18px}
+}
+
+/* ── volver arriba ──
+   Aparece pasada la primera pantalla y lleva de vuelta al inicio. Amarillo de
+   botones para que se lea igual sobre beige, sobre las bandas oscuras y sobre
+   el pie. z-index bajo la cabecera fija (110) y los diálogos (capa superior). */
+.subir{position:fixed;z-index:105;right:clamp(1rem,2.4vw,1.8rem);bottom:clamp(1rem,2.4vw,1.8rem);
+  width:3rem;height:3rem;display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:var(--boton);color:var(--titulo);cursor:pointer;
+  box-shadow:0 12px 26px -12px rgba(74,53,33,.6),0 0 0 1px rgba(74,53,33,.08);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .35s ease,visibility .35s ease,transform .35s cubic-bezier(.22,1,.36,1),background .25s ease}
+.subir.visible{opacity:1;visibility:visible;transform:none}
+.subir.visible:hover{background:var(--miel);transform:translateY(-3px)}
+.subir:focus-visible{outline:2px solid var(--nogal-osc);outline-offset:3px}
+.subir svg{width:1.3rem;height:1.3rem}
+
+/* ── menú pegado arriba en el teléfono (páginas interiores) ──
+   Hasta ahora la cabecera iba en el flujo y se iba con el scroll; en la
+   portada, en cambio, ya baja con la pantalla. Aquí la zona entera (tira +
+   barra) es `sticky` con un `top` negativo igual al alto de la tira: la tira
+   sale con el scroll y la barra con el menú queda fija. Va en 820px porque
+   desde ahí arriba el menú ya cabe a la vista y vive en `.cab-barra`. */
+@media(max-width:820px){
+  .cabecera-zona{position:sticky;top:-2.2rem;z-index:100;
+    box-shadow:0 8px 24px -18px rgba(74,53,33,.45)}
+}
+@media(max-width:560px){.cabecera-zona{top:-3.3rem}}
+
+/* ── responsive común ──
+   Cejilla centrada: si el texto no cabe en un renglón, la rayita quedaba
+   pegada a la izquierda de un bloque de dos líneas. En angosto la rayita
+   sube y queda centrada SOBRE el texto, que se ve igual de intencional con
+   una línea o con dos.
+   Títulos: los <br> que ordenan el renglón en escritorio dejan palabras
+   sueltas en un teléfono («cada / niño / a iluminar»). En angosto se ignoran
+   y el navegador equilibra los renglones él solo. */
+@media(max-width:560px){
+  .enc.centro .cejilla{flex-direction:column;gap:.55rem;text-align:center;text-wrap:balance}
+  main h1 br,main h2 br{display:none}
+  main h1,main h2{text-wrap:balance}
 }
 </style>
 </head>
@@ -965,9 +1038,13 @@ a.serv{display:block}
        entre ellos), a la derecha el horario, siempre visible -->
   <div class="tira">
     <div class="env tira-cols">
+      <div class="tira-ctrl">
+        <button class="tira-flecha" type="button" data-dir="-1" aria-label="Mensaje anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+        <button class="tira-flecha" type="button" data-dir="1" aria-label="Mensaje siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
       <div class="tira-visor">
         <span class="tira-msj activo">Av. Las Condes 10.415, of. 9<span class="tira-bar" aria-hidden="true">|</span><a href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank" rel="noopener">Encuéntranos en Google Maps <span aria-hidden="true">&#8594;</span></a></span>
-        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56975813632">+56 9 7581 3632</a></span>
+        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56926122138">+56 9 2612 2138</a></span>
       </div>
       <p class="tira-horario">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
@@ -1009,7 +1086,7 @@ a.serv{display:block}
           <li><a href="centro-iluminate-sitio.html#contacto">Contacto</a></li>
         </ul>
       </nav>
-      <a class="btn btn-p sticky-cta" href="https://wa.me/56975813632" target="_blank"
+      <a class="btn btn-p sticky-cta" href="https://wa.me/56926122138" target="_blank"
         rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Reserva por WhatsApp</a>
     </div>
   </header>
@@ -1079,7 +1156,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad de las Américas</p>
           <p class="ficha-ext">Experiencia con pacientes neurodivergentes (TEA, TDAH, DI); certificada en estimulación temprana y abordaje de selectividad alimentaria.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial</span><span class="atencion-dias">Lunes y martes</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Catalina%20Vargas%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Catalina Vargas"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Catalina%20Vargas%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Catalina Vargas"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1112,7 +1189,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad del Desarrollo</p>
           <p class="ficha-ext">Favorece la autonomía, la independencia y la participación significativa de cada persona en sus entornos cotidianos.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Emilia%20Middleton%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Emilia Middleton"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Emilia%20Middleton%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Emilia Middleton"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1138,7 +1215,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad Andrés Bello</p>
           <p class="ficha-ext">Acompaña desafíos de aprendizaje, integración sensorial y participación social desde un enfoque <span class="corte-manual">neuro<span>afirmativo</span></span>.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Pascuala%20Vergara%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Pascuala Vergara"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Pascuala%20Vergara%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Pascuala Vergara"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1163,7 +1240,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad San Sebastián</p>
           <p class="ficha-ext">Certificado en diagnóstico clínico del autismo (ADOS-2) y formado en integración sensorial y <span class="corte-manual">neuro<span>diversidad</span></span>.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Mathias%20Inzunza%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Mathias Inzunza"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Mathias%20Inzunza%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Mathias Inzunza"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1190,7 +1267,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad Mayor</p>
           <p class="ficha-ext">Más de 20 años de experiencia clínica acompañando el aprendizaje de personas neurodivergentes (TDAH, TEA, DI).</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial y Online</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Paola%20Rivera%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Paola Rivera"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Paola%20Rivera%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Paola Rivera"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1225,7 +1302,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad Mayor</p>
           <p class="ficha-ext">Más de 8 años con pacientes neurodivergentes; certificada en PECS, ESDM, IDTEL y evaluación con ABLLS-R.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial y a domicilio</span><span class="atencion-dias">Lunes, martes y sábado</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Anita%20Reyes%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Anita Reyes"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Anita%20Reyes%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Anita Reyes"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1249,7 +1326,7 @@ a.serv{display:block}
 
       <article class="ficha rev" id="carla-vilberos" data-prof="psicologia">
         <div class="ficha-retrato">
-          <span class="retrato-ini" aria-hidden="true">CV</span>
+          <img src="img/terapeutas/psicologa-carla-vilberos-centro-iluminate-terapias.webp" alt="Retrato de Carla Vilberos">
           <p class="ficha-prof"><svg class="prof-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.2a3.4 3.4 0 0 0-6.4.9A3 3 0 0 0 4 11a3.2 3.2 0 0 0 1.6 5.4 3.3 3.3 0 0 0 6.4-.6z"/><path d="M12 4.2a3.4 3.4 0 0 1 6.4.9A3 3 0 0 1 20 11a3.2 3.2 0 0 1-1.6 5.4 3.3 3.3 0 0 1-6.4-.6z"/></svg>Psicóloga</p>
         </div>
         <div class="ficha-cuerpo">
@@ -1258,7 +1335,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad del Mar</p>
           <p class="ficha-ext">Más de 15 años acompañando procesos emocionales y educativos: homeschooling, exámenes libres y adaptación escolar.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial y Online</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Carla%20Vilberos%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Carla Vilberos"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Carla%20Vilberos%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Carla Vilberos"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1285,7 +1362,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad de Buenos Aires, Argentina</p>
           <p class="ficha-ext">Más de 20 años promoviendo autoestima, autorregulación y bienestar socioemocional en niños, jóvenes y familias.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial y Online</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Denise%20Sznaider%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Denise Sznaider"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Denise%20Sznaider%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Denise Sznaider"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv">
@@ -1313,7 +1390,7 @@ a.serv{display:block}
           <p class="ficha-uni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 12v4.8c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/><path d="M22 9.5V15"/></svg>Universidad Andrés Bello</p>
           <p class="ficha-ext">Consulta odontológica en el gimnasio sensorial, limpieza dental y aplicación de flúor, en un entorno adaptado.</p>
           <p class="ficha-atencion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3.5 10h17"/></svg><span class="atencion-modo">Atención Presencial</span><span class="atencion-dias">Coordinar al agendar</span></p>
-          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Javiera%20Hosiasson%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Javiera Hosiasson"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
+          <p class="ficha-pie"><a class="ficha-agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20hora%20con%20Javiera%20Hosiasson%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar sesión con Javiera Hosiasson"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a><button class="ficha-ver" type="button">Ver perfil
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg></button></p>
         </div>
         <template class="ficha-cv" data-titulo="Atención que ofrece">
@@ -1336,7 +1413,7 @@ a.serv{display:block}
         </svg>
         <h3>¿No sabes con quién agendar?</h3>
         <p>Te orientamos en este camino</p>
-        <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20no%20s%C3%A9%20con%20qu%C3%A9%20especialista%20agendar%20en%20Centro%20Ilum%C3%ADnate.%20%C2%BFMe%20pueden%20orientar%3F" target="_blank" rel="noopener">
+        <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20no%20s%C3%A9%20con%20qu%C3%A9%20especialista%20agendar%20en%20Centro%20Ilum%C3%ADnate.%20%C2%BFMe%20pueden%20orientar%3F" target="_blank" rel="noopener">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
           Solicitar orientación</a>
       </article>
@@ -1356,7 +1433,7 @@ a.serv{display:block}
       <p class="bajada">Cuéntanos qué te preocupa y te orientamos: te contamos cómo
         trabaja el equipo, qué evaluación conviene y coordinamos los horarios entre
         especialidades.</p>
-      <a class="btn btn-p" href="https://wa.me/56975813632" target="_blank" rel="noopener">
+      <a class="btn btn-p" href="https://wa.me/56926122138" target="_blank" rel="noopener">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
         Escríbenos por WhatsApp</a>
     </div>
@@ -1382,7 +1459,7 @@ a.serv{display:block}
       <p class="perfil-tit" id="perfil-tit">Trayectoria</p>
       <div id="perfil-cv"></div>
       <div class="perfil-acciones">
-        <a class="btn btn-p" id="perfil-wa" href="https://wa.me/56975813632" target="_blank" rel="noopener">
+        <a class="btn btn-p" id="perfil-wa" href="https://wa.me/56926122138" target="_blank" rel="noopener">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
           <span id="perfil-wa-txt">Agendar una hora</span></a>
         <button class="btn btn-txt" type="button" id="perfil-volver">Volver al equipo</button>
@@ -1407,10 +1484,7 @@ a.serv{display:block}
 
       <div class="pie-marca">
         <a class="pie-logo" href="centro-iluminate-sitio.html" aria-label="Ilumínate, Centro de Terapias — ir al inicio">
-          <svg viewBox="0 0 539 461" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M380.589 11.3553C398.352 9.64492 414.139 22.6583 415.849 40.4211L426.525 151.29C433.003 148.274 440.095 146.289 447.613 145.565C483.138 142.144 514.711 168.17 518.132 203.696C521.553 239.221 495.526 270.793 460 274.214C452.482 274.938 445.142 274.342 438.207 272.618L449.399 388.849C451.109 406.611 438.096 422.397 420.333 424.107L71.9063 457.657C54.1434 459.367 38.357 446.354 36.6466 428.591L3.09692 80.1646C1.38659 62.4018 14.3999 46.6153 32.1628 44.905L380.589 11.3553Z" fill="#FDE34D" style="fill:#FDE34D;fill:color(display-p3 0.9922 0.8902 0.3020);fill-opacity:1;"/>
-            <path d="M167.842 117.984L171.725 117.61L189.866 116.576C206.597 115.203 223.305 113.594 239.99 111.75L257.995 109.304L261.878 108.93L264.93 140.627L254.592 140.554C241.178 141.845 243.965 141.933 241.209 142.911L238.84 144.208L238.202 144.982L254.972 319.146L255.746 319.784L258.319 320.605C261.211 321.039 258.492 321.657 271.906 320.365L282.04 318.321L285.092 350.018L281.209 350.392L263.068 351.426C246.337 352.8 229.63 354.408 212.944 356.253L194.939 358.699L191.056 359.073L188.004 327.375L198.342 327.449C211.756 326.157 208.969 326.069 211.725 325.091L214.094 323.794L214.732 323.02L197.962 148.857L197.188 148.219L194.615 147.398C191.723 146.963 194.442 146.345 181.028 147.637L170.894 149.682L167.842 117.984Z" fill="#114388" style="fill:#114388;fill:color(display-p3 0.0667 0.2627 0.5333);fill-opacity:1;"/>
-          </svg>
+          <img src="img/logotipo-circular-centro-iluminate.webp" alt="" width="560" height="560" loading="lazy" decoding="async">
           <span>
             <b>ilumínate</b>
             <small>Centro de Terapias</small>
@@ -1423,7 +1497,7 @@ a.serv{display:block}
             rel="noopener" aria-label="Instagram de Centro Ilumínate"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></a>
           <a class="pie-red" href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank"
             rel="noopener" aria-label="Ver la ubicación del centro en Google Maps"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s7-6.6 7-11.5a7 7 0 1 0-14 0c0 4.9 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.7"/></svg></a>
-          <a class="pie-red" href="https://wa.me/56975813632" target="_blank"
+          <a class="pie-red" href="https://wa.me/56926122138" target="_blank"
             rel="noopener" aria-label="Escribir por WhatsApp"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg></a>
         </div>
       </div>
@@ -1472,6 +1546,8 @@ a.serv{display:block}
     </div>
   </div>
 </footer>
+
+<button class="subir" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5.5"/><path d="M5.5 12 12 5.5 18.5 12"/></svg></button>
 
 <script>
 (function(){  // menú móvil
@@ -1522,22 +1598,44 @@ a.serv{display:block}
     io.observe(e);
   });
 })();
-(function(){  // tira: rota un mensaje a la vez
+(function(){  // tira: rota un mensaje a la vez; las flechas lo cambian a mano
   var tira = document.querySelector('.tira');
   var msjs = tira ? Array.prototype.slice.call(tira.querySelectorAll('.tira-msj')) : [];
   if (msjs.length < 2) return;
   var i = 0, reloj = null;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function pasar(){
+  // hacia adelante el siguiente sube desde abajo (el relevo de siempre); hacia
+  // atrás el anterior baja desde arriba, para que el movimiento siga a la flecha
+  function pasar(dir){
+    dir = dir || 1;
     var sale = msjs[i];
-    i = (i + 1) % msjs.length;
+    i = (i + dir + msjs.length) % msjs.length;
+    var entra = msjs[i];
     sale.classList.remove('activo');
-    sale.classList.add('saliendo');
-    setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
-    msjs[i].classList.add('activo');
+    if (dir > 0){
+      sale.classList.add('saliendo');
+      setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
+    } else {
+      // el que entra arranca arriba sin transición; el que sale vuelve solo
+      // a su sitio de reposo, abajo
+      entra.classList.remove('saliendo');
+      entra.style.transition = 'none';
+      entra.style.transform = 'translateY(-115%)';
+      void entra.offsetWidth;
+      entra.style.transition = entra.style.transform = '';
+    }
+    entra.classList.add('activo');
   }
   function arrancar(){ if (!reloj && !reduce) reloj = setInterval(pasar, 5200); }
   function parar(){ if (reloj) { clearInterval(reloj); reloj = null; } }
+  Array.prototype.forEach.call(tira.querySelectorAll('.tira-flecha'), function(b){
+    b.addEventListener('click', function(){
+      pasar(+b.getAttribute('data-dir'));
+      // en táctil no hay hover que pause: se reinicia la cuenta para que el
+      // mensaje elegido no se vaya enseguida
+      if (reloj) { parar(); arrancar(); }
+    });
+  });
   tira.addEventListener('mouseenter', parar);
   tira.addEventListener('mouseleave', arrancar);
   tira.addEventListener('focusin', parar);
@@ -1653,7 +1751,7 @@ a.serv{display:block}
     slotCV.innerHTML = '';
     slotCV.appendChild(plantilla.content.cloneNode(true));
     var nombre = slotNom.textContent;
-    botonWa.href = 'https://wa.me/56975813632?text=' +
+    botonWa.href = 'https://wa.me/56926122138?text=' +
       encodeURIComponent('Hola, quiero agendar una hora con ' + nombre +
         ' en Centro Ilumínate.');
     textoWa.textContent = 'Agendar con ' + nombre.split(' ')[0];
@@ -1708,6 +1806,27 @@ a.serv{display:block}
     var f = document.getElementById(location.hash.slice(8));
     if (f && f.classList.contains('ficha')) abrir(f);
   }
+})();
+
+(function(){  // volver arriba: visible pasada la primera pantalla
+  var b = document.querySelector('.subir');
+  if (!b) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pendiente = false;
+  function mirar(){
+    pendiente = false;
+    b.classList.toggle('visible', window.scrollY > window.innerHeight * .9);
+  }
+  window.addEventListener('scroll', function(){
+    if (!pendiente) { pendiente = true; requestAnimationFrame(mirar); }
+  }, {passive:true});
+  b.addEventListener('click', function(e){
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+    // con teclado (detail 0) el foco no se pierde con el botón: va al primer
+    // enlace de la página
+    if (e.detail === 0) { var s = document.querySelector('.saltar'); if (s) s.focus({preventScroll:true}); }
+  });
+  mirar();
 })();
 </script>
 </body>

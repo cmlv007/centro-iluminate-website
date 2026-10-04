@@ -31,8 +31,9 @@
   --nogal:#8A6540; --nogal-osc:#4A3521;
   /* arcilla — bandas de sección (antes marrón oscuro) */
   --arcilla:#C2B09B;
-  /* tinta */
-  --tinta:#2B3648;
+  /* tinta: texto de lectura. Era un azul de tinta (#2B3648) de la primera paleta;
+     ahora es el marrón oscuro del sitio, el mismo de --nogal-osc */
+  --tinta:#4A3521;
   /* acentos */
   --miel:#E3B23C; --miel-suave:#F7E3B0; --turquesa:#79C0CA;
   --titulo:#663F2E;
@@ -113,6 +114,17 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 .tira-msj.activo{opacity:1;transform:none;pointer-events:auto}
 .tira-msj.saliendo{opacity:0;transform:translateY(-115%)}
 .tira-bar{margin:0 .7rem;opacity:.45}
+/* flechas para pasar los mensajes a mano: van ANTES del visor, pegadas al
+   mensaje (el margen negativo descuenta parte del gap de .tira-cols), así se
+   leen como parte de él y no se confunden con el horario de la derecha */
+.tira-ctrl{flex:none;display:flex;align-items:center;gap:.3rem;margin-right:-.6rem}
+.tira-flecha{display:grid;place-items:center;width:1.45rem;height:1.45rem;padding:0;
+  border:0;border-radius:50%;background:transparent;
+  color:inherit;cursor:pointer;
+  transition:background .25s ease,border-color .25s ease,color .25s ease}
+.tira-flecha:hover{background:rgba(239,227,214,.16);color:#fff}
+.tira-flecha:focus-visible{outline:2px solid var(--boton);outline-offset:2px}
+.tira-flecha svg{width:.78rem;height:.78rem}
 .tira a{color:#fff;font-weight:700;text-decoration:none;margin-left:.35rem}
 .tira a:hover{text-decoration:underline}
 .tira-horario{flex:none;display:flex;align-items:center;gap:.5rem;margin:0;white-space:nowrap}
@@ -120,10 +132,12 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 /* el sabado es lo primero que sobra cuando la tira se estrecha: por debajo
    de ~740px el mensaje que rota a la izquierda chocaria con el horario
    (medido: a 820px aun quedan ~80px de aire entre los dos) */
-@media(max-width:800px){.tira-sab{display:none}}
+@media(max-width:900px){.tira-sab{display:none}}
 @media(max-width:560px){
   .tira{font-size:.72rem}
   .tira-visor{height:3.3rem}
+  /* en el dedo, un blanco un poco más grande */
+  .tira-flecha{width:1.85rem;height:1.85rem}
   /* el horario cedería demasiado ancho a los mensajes que rotan */
   .tira-horario{display:none}
 }
@@ -309,11 +323,12 @@ footer a:hover{color:var(--boton)}
 }
 @media(max-width:480px){.pie-cols{grid-template-columns:1fr}}
 /* versión reducida del logotipo: isotipo + nombre armados aquí mismo */
-.pie-logo{display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1.35rem}
-.pie-logo svg{width:42px;height:auto;flex:none}
-.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.45rem;line-height:1;
+.pie-logo{display:inline-flex;align-items:center;gap:1.05rem;margin-bottom:1.35rem}
+.pie-logo img{width:80px;height:80px;flex:none;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 1px rgba(239,227,214,.14)}
+.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.9rem;line-height:1;
   letter-spacing:-.01em;color:#FFF7EE;display:block}
-.pie-logo small{display:block;margin-top:.28rem;font-size:.58rem;font-weight:600;
+.pie-logo small{display:block;margin-top:.34rem;font-size:.76rem;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;color:var(--boton)}
 .pie-frase{max-width:36ch;line-height:1.75;margin:0 0 1.3rem}
 /* el ícono no debe empujar las dos líneas: se alinea con la primera */
@@ -558,8 +573,11 @@ main section[id]{scroll-margin-top:5rem}
    portada de esta página: aquí va el mismo patio de lejos y con sol */
 .cierre-pagina{background:var(--nogal-osc)}
 .cierre-pagina .env{position:relative;z-index:1}
+/* desde el 04-10-2026 el cierre de esta página ya no es la copia del de
+   servicios: invita a la reunión de los martes, con la foto de mamás
+   brindando en la mesa (las caras quedan en el tercio de arriba) */
 .cierre-foto{position:absolute;inset:0;
-  background:url("img/cierre-servicios.webp") 50% 74%/cover no-repeat}
+  background:url("img/reunion-de-mamas.webp") 50% 36%/cover no-repeat}
 .cierre-halo{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(72% 86% at 50% 50%,rgba(38,25,17,.9),rgba(38,25,17,.66) 62%,
     rgba(48,32,22,.6) 100%),
@@ -570,8 +588,20 @@ main section[id]{scroll-margin-top:5rem}
    letter-spacing .09em) dentro de una rejilla 1fr auto 1fr que ya lleva la
    marca a la izquierda y el botón de WhatsApp a la derecha: con cinco
    desborda el .env entre ~821 y ~950px de pantalla. */
-@media(max-width:1020px){
-  .sticky-enlaces{gap:1.4rem}
+@media(max-width:1100px){
+  .sticky-enlaces{gap:1.2rem}
+}
+/* El botón de WhatsApp se partía en dos o tres renglones entre 821 y 1099px
+   (medido) y engordaba la barra. Va siempre en un renglón; y donde ni con los
+   enlaces juntos cabe entero (821-940px) queda sólo el ícono, en un círculo.
+   El texto no se borra del marcado: `font-size:0` lo esconde a la vista pero
+   los lectores de pantalla lo siguen leyendo como nombre del enlace. */
+.sticky-cta{white-space:nowrap}
+/* la bajada de la marca se partía en dos renglones a ~821-880px */
+.sticky-marca small{white-space:nowrap}
+@media(min-width:821px) and (max-width:940px){
+  .sticky-cta{font-size:0;gap:0;padding:.7rem}
+  .sticky-cta svg{width:18px;height:18px}
 }
 /* ══════════════════════════════════════════════════════════════════════════
    CONÓCENOS · «la carta de Gloria»
@@ -643,34 +673,40 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   padding:clamp(5rem,9vw,7rem) 0 clamp(3.5rem,6vw,5rem);
   background:var(--nogal-osc);
 }
-/* Esta foto —a diferencia de la primera— ya trae a Gloria corrida hacia la
-   derecha en el propio archivo (~75% de su ancho), así que no hace falta el
-   truco de escalar desde el borde izquierdo: en una banda de escritorio, más
-   ancha que el archivo, `cover` ya rellena TODO el ancho sin recortar los
-   lados (el recorte es vertical), así que su posición horizontal queda fija
-   por la propia foto y basta con `background-position` para afinar el encuadre. */
+/* La foto de la oficina trae a Gloria casi al centro (~60% de su ancho) y de
+   cuerpo entero hasta el borde de arriba. La capa cubre TODA la sección —así
+   la oficina sigue, tenue, detrás de la frase— y la lleva a la mitad derecha
+   con un acercamiento de 1,15 que crece desde la esquina superior izquierda:
+   todo lo que está a la derecha del origen se aleja de él, así que su cara
+   pasa del 60% al ~69% del ancho, y como crece hacia abajo la cabeza no se
+   corta (sólo se recorta por debajo de la cintura). El 30% horizontal sólo
+   cuenta cuando la banda es más angosta que la foto (≈901–1100px): ahí
+   `cover` ajusta por alto y ese sesgo evita que su brazo derecho se salga
+   por el borde. */
 .portada-retrato{
   position:absolute;inset:0;z-index:0;
-  background:url("img/gloria-de-villar-panoramica.webp") 78% 44%/cover no-repeat;
-  /* Acercamiento: como `cover` ya llena todo el ancho, `background-size` no
-     tiene de dónde agrandar a Gloria sin dejar hueco; el zoom se hace
-     escalando la capa. El origen va SOBRE ella —68% del ancho, un poco bajo
-     la línea de los ojos— para que al crecer no se corra de la mitad derecha
-     y su cara suba un punto dentro de la banda. El 44% vertical del
-     `background-position` (antes 38%) es la subida leve del encuadre. */
-  transform:scale(1.32);transform-origin:68% 52%;
+  background:url("img/gloria-del-villar-founder-portada-centro-iluminate-terapias.webp") 30% 0%/cover no-repeat;
+  transform:scale(1.15);transform-origin:0% 0%;
 }
-/* El velo carga a la izquierda, que es el lado que se lee: la estantería de
-   la foto es beige claro y sin él la frase clara desaparece encima. La zona
-   realmente oscura (>=.6) cierra ANTES del 40% del ancho —menos de la mitad
-   de la sección— para no comerse la cara de Gloria, que ya está corrida al
-   68% por el zoom de `.portada-retrato`; de ahí se aclara rápido y vuelve a
-   cerrar un punto en el borde para que su hombro no quede cortado en seco. */
+/* en pantallas muy anchas la banda ya es mucho más apaisada que la foto y
+   `cover` recorta bastante por abajo: con 1,15 Gloria quedaba cortada al
+   pecho y la foto se agrandaba de más. 1,06 la deja igual en la mitad
+   derecha (~64%) y de la cintura hacia arriba */
+@media(min-width:1600px){.portada-retrato{transform:scale(1.06)}}
+/* El velo es un único degradado sin tramo sólido: la opacidad baja en curva
+   —primero despacio, después rápido, al final despacio otra vez—, con tramos
+   cada ~8% del ancho para que el ojo no encuentre dónde termina el color.
+   Detrás de la frase (hasta ~40% del ancho) va de .86 a .6: la foto se adivina
+   pero la letra clara, con su sombra, sigue leyéndose aun sobre el cielo
+   claro de las ventanas. Desde el 60% casi no queda nada y vuelve a cerrar un
+   punto contra el borde derecho para enmarcar. */
 .portada-velo{
   position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(95deg,rgba(38,25,17,.94) 0%,rgba(38,25,17,.82) 18%,
-    rgba(38,25,17,.55) 32%,rgba(38,25,17,.2) 46%,rgba(38,25,17,.04) 60%,
-    rgba(38,25,17,.12) 100%);
+  background:linear-gradient(90deg,
+    rgba(38,25,17,.86) 0%,rgba(38,25,17,.84) 10%,rgba(38,25,17,.79) 20%,
+    rgba(38,25,17,.7) 29%,rgba(38,25,17,.56) 37%,rgba(38,25,17,.39) 45%,
+    rgba(38,25,17,.23) 53%,rgba(38,25,17,.1) 61%,rgba(38,25,17,.03) 70%,
+    rgba(38,25,17,.03) 86%,rgba(38,25,17,.12) 100%);
 }
 .portada-carta .env{position:relative;z-index:2}
 .portada-carta .enc{max-width:min(46ch,53%);margin-bottom:0;text-align:left}
@@ -711,15 +747,19 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     padding-bottom:clamp(2.5rem,6vw,3.5rem);
   }
   .portada-retrato{
-    inset:0 0 auto 0;height:var(--alto-foto);
-    /* aquí la banda es más angosta que la foto: SÍ recorta a los costados,
-       así que hay que sesgar hacia Gloria para que no la deje afuera.
-       El acercamiento NO puede hacerse con `transform` como en escritorio: esta
-       capa sólo mide lo que la banda de la foto, y al escalarla la imagen se
-       derramaría por debajo del velo —que mide igual— y se vería detrás del
-       texto. Con `background-size` el dibujo crece pero sigue recortado dentro
-       de la caja. El 55% vertical sube el encuadre sobre la cara. */
-    background-position:72% 55%;background-size:auto 124%;transform:none;
+    inset:0 0 auto 0;height:var(--alto-foto);transform:none;
+    /* aquí la banda es más angosta que la foto: SÍ recorta a los costados, y
+       el recorte se calcula para dejar a Gloria AL CENTRO a cualquier ancho.
+       Con `auto 125%` la foto (16:9) mide de ancho 2,221 × --alto-foto y su
+       cara cae en el 60% de eso, 1,333 × --alto-foto: correrla 50vw menos
+       eso la centra; el `max()` impide que el borde derecho de la foto se
+       despegue de la banda y deje hueco. El acercamiento va con
+       `background-size` y no con `transform`: la capa mide sólo la banda y
+       escalarla derramaría la foto bajo el texto. El 8% vertical deja la
+       cabeza adentro. */
+    background-size:auto 125%;
+    background-position:max(100vw - var(--alto-foto) * 2.221,
+      50vw - var(--alto-foto) * 1.333) 8%;
   }
   /* el velo cierra en --nogal-osc, que es el fondo de la sección: así la
      banda entrega el color sin escalón */
@@ -829,7 +869,12 @@ main :focus-visible{outline-color:var(--nogal-osc)}
    --nogal, un marrón de la propia paleta: --turquesa quedó reservado para «El
    grupo de mamás azules» —la sección siguiente—, y repetirlo acá las hacía
    leer como una sola pieza en vez de dos. */
-.dos-manos{--tinte:var(--nogal);background:var(--beige-claro)}
+/* `overflow-x:clip`: la mancha de color detrás de la foto va corrida un 6% y
+   girada; a 1024px la foto queda pegada al borde y la mancha se salía 20px,
+   lo que dejaba arrastrar la página hacia el costado. `clip` no recorta en
+   vertical, así que la planta sigue asomando arriba y abajo */
+.dos-manos{--tinte:var(--nogal);background:var(--beige-claro);overflow-x:clip}
+.carta{overflow-x:clip}
 .dos-manos .pliego{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.66fr);
   gap:clamp(2.6rem,6vw,5rem);align-items:center;
@@ -1221,8 +1266,13 @@ main :focus-visible{outline-color:var(--nogal-osc)}
      comía el `overflow:hidden` de la banda: acá se alinea con el borde de la
      foto. Y sube menos que en escritorio —donde tiene la columna vacía de al
      lado— porque aquí, encima de la foto, está el último párrafo: con el -19%
-     del escritorio el aro se le montaba a la línea final. */
-  .circulo-texto{left:0;top:-12%}
+     del escritorio el aro se le montaba a la línea final.
+     La subida va en rem y no en %: el % se mide contra el ALTO de la foto, que
+     apilada a lo ancho de una tablet crece tanto que el -12% volvía a montar
+     el aro sobre «…próxima reunión.» (medido a 768). Con -3.4rem el aro
+     sobresale siempre lo mismo, y la foto baja 1.5rem para hacerle sitio. */
+  .circulo-texto{left:0;top:-3.4rem}
+  .mamas-azules .circulo-figura{margin-top:1.5rem}
   /* la hoja de fondo se retira apilada; el umbral real está más arriba, en el
      @media de 1300px que viene después */
 }
@@ -1242,6 +1292,47 @@ main :focus-visible{outline-color:var(--nogal-osc)}
      vuelve a alinearse a la izquierda. */
   .mamas-azules p:not([class]){text-align:left;hyphens:none}
 }
+
+/* ── volver arriba ──
+   Aparece pasada la primera pantalla y lleva de vuelta al inicio. Amarillo de
+   botones para que se lea igual sobre beige, sobre las bandas oscuras y sobre
+   el pie. z-index bajo la cabecera fija (110) y los diálogos (capa superior). */
+.subir{position:fixed;z-index:105;right:clamp(1rem,2.4vw,1.8rem);bottom:clamp(1rem,2.4vw,1.8rem);
+  width:3rem;height:3rem;display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:var(--boton);color:var(--titulo);cursor:pointer;
+  box-shadow:0 12px 26px -12px rgba(74,53,33,.6),0 0 0 1px rgba(74,53,33,.08);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .35s ease,visibility .35s ease,transform .35s cubic-bezier(.22,1,.36,1),background .25s ease}
+.subir.visible{opacity:1;visibility:visible;transform:none}
+.subir.visible:hover{background:var(--miel);transform:translateY(-3px)}
+.subir:focus-visible{outline:2px solid var(--nogal-osc);outline-offset:3px}
+.subir svg{width:1.3rem;height:1.3rem}
+
+/* ── menú pegado arriba en el teléfono (páginas interiores) ──
+   Hasta ahora la cabecera iba en el flujo y se iba con el scroll; en la
+   portada, en cambio, ya baja con la pantalla. Aquí la zona entera (tira +
+   barra) es `sticky` con un `top` negativo igual al alto de la tira: la tira
+   sale con el scroll y la barra con el menú queda fija. Va en 820px porque
+   desde ahí arriba el menú ya cabe a la vista y vive en `.cab-barra`. */
+@media(max-width:820px){
+  .cabecera-zona{position:sticky;top:-2.2rem;z-index:100;
+    box-shadow:0 8px 24px -18px rgba(74,53,33,.45)}
+}
+@media(max-width:560px){.cabecera-zona{top:-3.3rem}}
+
+/* ── responsive común ──
+   Cejilla centrada: si el texto no cabe en un renglón, la rayita quedaba
+   pegada a la izquierda de un bloque de dos líneas. En angosto la rayita
+   sube y queda centrada SOBRE el texto, que se ve igual de intencional con
+   una línea o con dos.
+   Títulos: los <br> que ordenan el renglón en escritorio dejan palabras
+   sueltas en un teléfono («cada / niño / a iluminar»). En angosto se ignoran
+   y el navegador equilibra los renglones él solo. */
+@media(max-width:560px){
+  .enc.centro .cejilla{flex-direction:column;gap:.55rem;text-align:center;text-wrap:balance}
+  main h1 br,main h2 br{display:none}
+  main h1,main h2{text-wrap:balance}
+}
 </style>
 </head>
 <body>
@@ -1254,9 +1345,13 @@ main :focus-visible{outline-color:var(--nogal-osc)}
        entre ellos), a la derecha el horario, siempre visible -->
   <div class="tira">
     <div class="env tira-cols">
+      <div class="tira-ctrl">
+        <button class="tira-flecha" type="button" data-dir="-1" aria-label="Mensaje anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+        <button class="tira-flecha" type="button" data-dir="1" aria-label="Mensaje siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
       <div class="tira-visor">
         <span class="tira-msj activo">Av. Las Condes 10.415, of. 9<span class="tira-bar" aria-hidden="true">|</span><a href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank" rel="noopener">Encuéntranos en Google Maps <span aria-hidden="true">&#8594;</span></a></span>
-        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56975813632">+56 9 7581 3632</a></span>
+        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56926122138">+56 9 2612 2138</a></span>
       </div>
       <p class="tira-horario">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
@@ -1298,7 +1393,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
           <li><a href="centro-iluminate-sitio.html#contacto">Contacto</a></li>
         </ul>
       </nav>
-      <a class="btn btn-p sticky-cta" href="https://wa.me/56975813632" target="_blank"
+      <a class="btn btn-p sticky-cta" href="https://wa.me/56926122138" target="_blank"
         rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Reserva por WhatsApp</a>
     </div>
   </header>
@@ -1331,8 +1426,8 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     <div class="pliego">
       <figure class="historia-figura rev">
         <span class="historia-planta" aria-hidden="true"><svg viewBox="0 0 322 288" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M285.915 142.51C279.78 141.881 273.436 143.642 267.38 146.682C258.897 150.948 250.96 157.727 245.075 163.077C243.187 164.789 238.485 169.025 235.894 170.172C224.665 172.624 210.034 178.504 202.474 186.689C202.444 186.725 202.333 186.856 202.226 187.018C194.407 185.49 186.896 183.361 180.536 178.553C170.754 171.152 164.527 160.743 158.762 149.95C157.2 147.026 155.67 144.079 154.12 141.137C163.881 144.914 173.699 143.515 181.476 140.782C188.071 146.204 201.578 151.761 213.995 152.297C223.582 152.706 232.443 150.113 237.557 143.018C241.458 137.612 240.584 133.16 237.498 129.565C234.433 125.982 228.73 123.383 224.007 121.758C226.882 120.819 230.277 119.591 233.342 117.918C237.983 115.408 241.835 111.94 243.08 107.397C244.173 103.352 243.495 100.456 241.903 98.4016C240.333 96.3604 237.744 95.1232 234.651 94.5977C229.339 93.7104 222.397 95.0165 217.822 96.9533C212.503 99.2037 206.355 104.269 200.464 110.351C192.353 118.721 184.704 128.97 180.381 135.6C171.7 138.741 159.851 140.06 149.132 131.759C148.629 130.94 148.088 130.129 147.504 129.327C147.501 129.32 147.501 129.32 147.489 129.316C144.976 125.196 142.256 121.259 139.155 117.652C130.194 107.25 118.57 100.517 106.453 94.2831C108.951 93.65 111.574 92.8247 114.825 92.137C115.124 92.0792 115.418 92.0102 115.715 91.9392C123.447 90.1226 129.561 87.1292 135.515 83.1072C138.01 89.2107 144.814 96.7274 152.495 100.786C158.337 103.876 164.663 104.872 169.98 102.524C173.596 100.919 176.913 97.77 179.258 92.3544C180.855 88.6491 180.425 85.0469 178.957 81.7686C177.661 78.8742 175.539 76.2487 173.576 74.0678C172.598 72.9867 171.514 71.7593 170.777 70.9141C170.996 70.8061 171.22 70.7188 171.415 70.6488C173.217 70.0036 175.473 69.3842 177.66 68.5425C183.152 66.4095 188.117 62.9963 187.927 56.0159C187.82 52.1912 186.392 49.7102 184.277 48.1545C182.197 46.6382 179.374 46.0043 176.128 46.1325C167.91 46.4606 156.702 51.861 151.565 55.8183C144.554 61.2098 138.762 69.0862 135.629 76.5736C129.265 81.2971 123.061 84.798 114.783 86.7523C114.532 86.802 114.284 86.8687 114.04 86.9108C111.032 87.5565 108.588 88.3327 106.27 88.9527C103.396 89.7331 100.739 90.2204 97.1405 89.5563C96.9578 89.4484 96.7794 89.3613 96.5855 89.2857C90.8494 86.3744 85.1222 83.3911 79.6486 79.9989C64.8207 70.7935 52.6926 58.8889 41.6845 46.1077C55.8847 52.0134 72.9662 53.6795 87.4177 45.688C88.1526 47.9112 89.4399 50.1706 91.1612 52.3066C94.9106 56.9386 100.676 60.9101 106.468 62.4014C110.047 63.319 113.639 63.3064 116.9 62.1479C120.231 60.9623 123.278 58.5867 125.55 54.5403C129.468 47.582 125.298 41.527 121.175 37.2994C120.647 36.781 120.088 36.2043 119.581 35.663C121.595 35.2388 124.108 34.649 126.088 34.0229C129.62 32.9052 132.623 31.1292 133.898 28.9279C136.433 24.5727 135.35 20.355 132.498 17.4154C129.779 14.6105 125.406 13.0864 121.391 13.7155C99.8433 17.0945 90.4839 33.7914 87.7942 39.2898C70.0798 51.5662 46.8225 44.7683 32.1389 34.3744C32.0894 34.3333 32.0279 34.3112 31.9809 34.2871C31.9451 34.2534 31.9127 34.2273 31.8692 34.2107C30.6708 32.7084 29.4768 31.2042 28.2973 29.698C27.5649 28.76 26.8231 27.8128 26.1019 26.8653C20.0465 18.984 14.8279 10.2496 8.02233 2.91059C7.86382 2.74203 7.08771 1.8329 6.32693 1.1977C5.75376 0.726989 5.14854 0.379455 4.65729 0.216043C3.09814 -0.3036 1.80166 0.158964 0.845599 1.12476C-0.284672 2.26427 -0.283548 3.95785 0.861091 4.8955C1.2688 5.22796 1.77103 5.42718 2.28916 5.47881C2.6753 5.86629 3.32659 6.51013 3.41947 6.61318C10.1202 13.8455 15.2537 22.4598 21.2128 30.2305C21.9494 31.1891 22.692 32.1496 23.4354 33.1007C26.8105 37.3942 30.2308 41.6854 33.7524 45.9038C35.9236 50.0655 37.4665 55.1538 38.5291 60.6174C40.8252 72.3914 40.7899 85.8649 39.3114 95.8992C35.4844 104.647 19.1801 132.961 12.4203 151.832C10.5638 157.041 9.41774 161.585 9.33471 164.897C9.26583 167.818 10.0464 169.948 11.4216 171.226C13.2625 172.918 15.2303 173.498 17.1773 173.381C19.736 173.237 22.4961 171.711 25.0881 169.047C30.9621 163.008 36.6106 150.54 39.6925 144.906C40.0367 145.303 40.3894 145.719 40.7225 146.104C44.0789 150.07 49.2637 154.376 56.7738 151.428C67.4602 147.259 69.1962 137.956 66.0606 127.611C62.1773 114.764 50.8446 100.349 45.2265 95.174C46.6482 84.7396 46.6257 71.1381 44.2978 59.1791C44.18 58.5981 44.0699 58.0227 43.9393 57.4474C53.4244 67.6182 63.8514 76.9517 76.0633 84.5289C81.6316 87.9825 87.4691 90.9931 93.324 93.9278C98.1182 97.8937 100.314 104.223 100.675 111.081C101.233 121.252 97.7408 132.639 91.8576 139.89C87.2636 145.27 65.7136 165.269 56.0056 179.582C53.1861 183.753 51.3448 187.51 50.91 190.396C50.5179 193.046 51.1848 195.142 52.8408 196.596C55.5842 199.009 59.4077 199.658 63.2689 198.528C69.7267 196.652 74.0744 191.538 76.6613 186.063C77.1259 187.013 77.6549 187.911 78.2314 188.652C80.3666 191.34 83.5253 193.063 88.3578 192.052C93.2184 191.046 96.9952 186.792 99.2996 180.634C103.846 168.477 103.163 148.783 100.501 141.717C100.098 140.63 99.5726 139.807 99.0325 139.181C104.106 131.095 107.066 120.197 106.524 110.3C106.325 106.453 105.581 102.771 104.275 99.4419C115.471 105.235 126.14 111.597 134.419 121.22C139.277 126.869 143.153 133.37 146.793 140.08C153.982 156.45 149.183 174.41 144.831 184.291C144.47 184.395 144.111 184.557 143.798 184.789C133.515 192.091 107.696 214.216 96.3599 232.574C90.9729 241.292 88.9651 249.273 92.1091 254.848C94.2915 258.738 98.7729 261.119 103.841 260.481C110.39 259.665 115.567 255.531 119.508 249.94C122.206 246.127 124.319 241.636 125.973 237.316C126.131 237.815 126.329 238.288 126.534 238.743C128.321 242.521 131.488 244.766 136.681 243.592C139.618 242.928 142.305 241.023 144.567 238.073C147.375 234.424 149.591 229.031 151.039 223.032C153.512 212.894 153.877 200.938 151.938 193.098C151.372 190.771 150.566 188.789 149.587 187.237C152.731 180.528 156.281 169.682 156.267 157.834C161.643 167.317 167.771 176.194 176.548 182.82C183 187.719 190.516 190.176 198.411 191.851C197.993 194.535 198.199 198.007 198.869 201.813C200.177 209.236 203.106 218.152 205.269 224.809C204.051 233.946 198.676 250.186 197.931 263.595C197.375 273.584 199.52 282.007 206.543 285.828C209.776 287.59 214.277 288.187 217.915 285.898C220.515 284.258 222.141 281.899 223.057 279.153C224.188 275.739 224.163 271.719 224.004 268.248C223.974 267.519 223.947 266.739 223.944 265.979C226.227 267.966 228.772 270.545 231.565 272.153C234.968 274.11 238.712 274.799 242.702 272.949C245.057 271.851 246.633 270.442 247.611 268.851C249.652 265.561 249.085 261.115 246.235 256.294C238.896 243.91 216.725 227.717 211.038 223.27C209.308 217.972 207.062 211.176 205.58 204.864C204.494 200.286 203.737 196.002 204.051 192.903C211.12 194.13 218.32 195.077 225.159 197.074C240.195 201.461 250.714 212.542 259.87 223.582C260.023 223.762 260.187 223.91 260.378 224.023C263.571 228.965 265.249 232.112 267.933 237.696C271.076 244.241 272.341 253.958 275.871 261.737C278.507 267.546 282.36 272.317 288.622 274.497C292.855 275.985 295.864 275.561 297.853 274.45C300.05 273.229 301.453 270.969 301.919 268.014C302.796 262.464 300.295 253.858 299.391 250.035C299.674 250.093 299.976 250.179 300.265 250.27C301.76 250.728 303.297 251.507 304.877 252.199C309.218 254.109 313.803 255.211 318.379 252.055C321.499 249.909 321.836 246.143 321.022 243.289C318.804 235.412 311.35 230.634 301.93 227.555C289.251 223.423 272.987 222.334 263.848 219.101C254.266 207.642 243.036 196.492 227.418 191.924C221.332 190.144 214.931 189.177 208.618 188.116C215.644 181.821 227.284 177.435 236.434 175.414C243.938 176.68 254.669 182.86 264.93 185.895C272.985 188.268 280.795 188.681 286.989 184.827C290.142 182.856 291.521 180.703 291.896 178.632C292.393 175.803 290.815 172.796 287.818 170.107C284.717 167.289 280.125 164.709 276.508 162.712C277.477 162.61 278.45 162.493 279.409 162.332C282.526 161.827 285.553 160.951 288.454 159.04C293.039 156.006 294.655 151.065 293.256 147.438C292.291 144.966 289.926 142.934 285.915 142.51Z" fill="currentColor"/></svg></span>
-        <img class="historia-foto" src="img/gloria-de-villar-founder-centro-iluminate.webp"
-          alt="Retrato de Gloria del Villar" width="640" height="736">
+        <img class="historia-foto" src="img/gloria-del-villar-founder-directora-centro-iluminate.webp"
+          alt="Retrato de Gloria del Villar, de blusa blanca, frente a un muro claro" width="640" height="736">
       </figure>
 
       <div class="rev">
@@ -1426,7 +1521,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     <div class="pliego">
       <div class="col-texto rev">
         <p class="cejilla">El grupo de mamás azules</p>
-        <h2 class="h-l" style="margin-bottom:1.4rem">Las mamás también<br>necesitábamos un lugar.</h2>
+        <h2 class="h-l" style="margin-bottom:1.4rem">Las mamás también <br>necesitábamos un lugar.</h2>
         <p>Cuando diagnosticaron a mi hijo, el camino empezó a sentirse solitario y
           lleno de interrogantes. Al poco andar me di cuenta de que las mamás
           dejábamos a los niños en sus sesiones y nos íbamos con dudas,
@@ -1440,8 +1535,8 @@ main :focus-visible{outline-color:var(--nogal-osc)}
           momentos difíciles y organizar talleres para aprender, pero que también se
           junta a descansar, reír y desconectar de la rutina.</p>
         <p class="invitacion">¿Te nos unes por una copita de vino?
-          <a href="https://wa.me/56975813632" target="_blank" rel="noopener">Escríbeme</a>
-          y súmate a nuestra próxima actividad.</p>
+          <a href="https://wa.me/56926122138?text=%C2%A1Hola%21%20Quisiera%20participar%20en%20su%20siguiente%20actividad%20de%20mam%C3%A1s%20azules%20%F0%9F%92%99%2C%20%C2%BFMe%20entregas%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener">Escríbeme</a>
+          y súmate a nuestra próxima reunión.</p>
       </div>
 
       <figure class="circulo-figura rev">
@@ -1477,7 +1572,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   <div class="env">
     <div class="enc centro rev">
       <p class="cejilla">¿No sabes si perteneces a esta comunidad?</p>
-      <h2 class="h-l">Cuéntame si alguna vez<br>has pensado...</h2>
+      <h2 class="h-l">Cuéntame si alguna vez <br>has pensado...</h2>
     </div>
   </div>
 
@@ -1533,7 +1628,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     <div class="testimonios-cta rev">
       <!-- El WhatsApp va con el mensaje escrito: quien se reconoció en una nota
            no tiene que inventar cómo presentarse. -->
-      <a class="btn btn-p" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20sumarme%20al%20grupo%20de%20mam%C3%A1s%20de%20Centro%20Ilum%C3%ADnate%20y%20participar%20en%20sus%20actividades." target="_blank" rel="noopener">
+      <a class="btn btn-p" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20sumarme%20al%20grupo%20de%20mam%C3%A1s%20de%20Centro%20Ilum%C3%ADnate%20y%20participar%20en%20sus%20actividades." target="_blank" rel="noopener">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
         Súmate a nuestra comunidad</a>
     </div>
@@ -1581,13 +1676,13 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   <div class="env">
     <div class="enc centro rev">
       <p class="cejilla c-arcilla">Hablemos</p>
-      <h2 class="h-l">¿No sabes por dónde partir?</h2>
-      <p class="bajada">Cuéntanos tu caso por WhatsApp: te decimos qué terapia o
-        evaluación corresponde, con qué especialista y con qué valores, sin
-        compromiso.</p>
-      <a class="btn btn-p" href="https://wa.me/56975813632" target="_blank" rel="noopener">
+      <h2 class="h-l">¿Te nos unes este siguiente martes?</h2>
+      <p class="bajada">Nos reunimos todos los martes de cada semana para compartir
+        experiencias, intercambiar datos o simplemente pasar un buen rato, solo
+        entre mamás.</p>
+      <a class="btn btn-p" href="https://wa.me/56926122138?text=%C2%A1Hola%21%20Quisiera%20participar%20en%20su%20siguiente%20actividad%20de%20mam%C3%A1s%20azules%20%F0%9F%92%99%2C%20%C2%BFMe%20entregas%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
-        Escríbenos por WhatsApp</a>
+        Quiero participar</a>
     </div>
   </div>
 </section>
@@ -1600,10 +1695,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
 
       <div class="pie-marca">
         <a class="pie-logo" href="centro-iluminate-sitio.html" aria-label="Ilumínate, Centro de Terapias — ir al inicio">
-          <svg viewBox="0 0 539 461" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M380.589 11.3553C398.352 9.64492 414.139 22.6583 415.849 40.4211L426.525 151.29C433.003 148.274 440.095 146.289 447.613 145.565C483.138 142.144 514.711 168.17 518.132 203.696C521.553 239.221 495.526 270.793 460 274.214C452.482 274.938 445.142 274.342 438.207 272.618L449.399 388.849C451.109 406.611 438.096 422.397 420.333 424.107L71.9063 457.657C54.1434 459.367 38.357 446.354 36.6466 428.591L3.09692 80.1646C1.38659 62.4018 14.3999 46.6153 32.1628 44.905L380.589 11.3553Z" fill="#FDE34D" style="fill:#FDE34D;fill:color(display-p3 0.9922 0.8902 0.3020);fill-opacity:1;"/>
-            <path d="M167.842 117.984L171.725 117.61L189.866 116.576C206.597 115.203 223.305 113.594 239.99 111.75L257.995 109.304L261.878 108.93L264.93 140.627L254.592 140.554C241.178 141.845 243.965 141.933 241.209 142.911L238.84 144.208L238.202 144.982L254.972 319.146L255.746 319.784L258.319 320.605C261.211 321.039 258.492 321.657 271.906 320.365L282.04 318.321L285.092 350.018L281.209 350.392L263.068 351.426C246.337 352.8 229.63 354.408 212.944 356.253L194.939 358.699L191.056 359.073L188.004 327.375L198.342 327.449C211.756 326.157 208.969 326.069 211.725 325.091L214.094 323.794L214.732 323.02L197.962 148.857L197.188 148.219L194.615 147.398C191.723 146.963 194.442 146.345 181.028 147.637L170.894 149.682L167.842 117.984Z" fill="#114388" style="fill:#114388;fill:color(display-p3 0.0667 0.2627 0.5333);fill-opacity:1;"/>
-          </svg>
+          <img src="img/logotipo-circular-centro-iluminate.webp" alt="" width="560" height="560" loading="lazy" decoding="async">
           <span>
             <b>ilumínate</b>
             <small>Centro de Terapias</small>
@@ -1616,7 +1708,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
             rel="noopener" aria-label="Instagram de Centro Ilumínate"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></a>
           <a class="pie-red" href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank"
             rel="noopener" aria-label="Ver la ubicación del centro en Google Maps"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s7-6.6 7-11.5a7 7 0 1 0-14 0c0 4.9 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.7"/></svg></a>
-          <a class="pie-red" href="https://wa.me/56975813632" target="_blank"
+          <a class="pie-red" href="https://wa.me/56926122138" target="_blank"
             rel="noopener" aria-label="Escribir por WhatsApp"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg></a>
         </div>
       </div>
@@ -1666,6 +1758,8 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   </div>
 </footer>
 
+<button class="subir" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5.5"/><path d="M5.5 12 12 5.5 18.5 12"/></svg></button>
+
 <script>
 (function(){  // menú móvil
   var b = document.querySelector('.hamb'), m = document.getElementById('menu');
@@ -1693,22 +1787,44 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     io.observe(e);
   });
 })();
-(function(){  // tira: rota un mensaje a la vez
+(function(){  // tira: rota un mensaje a la vez; las flechas lo cambian a mano
   var tira = document.querySelector('.tira');
   var msjs = tira ? Array.prototype.slice.call(tira.querySelectorAll('.tira-msj')) : [];
   if (msjs.length < 2) return;
   var i = 0, reloj = null;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function pasar(){
+  // hacia adelante el siguiente sube desde abajo (el relevo de siempre); hacia
+  // atrás el anterior baja desde arriba, para que el movimiento siga a la flecha
+  function pasar(dir){
+    dir = dir || 1;
     var sale = msjs[i];
-    i = (i + 1) % msjs.length;
+    i = (i + dir + msjs.length) % msjs.length;
+    var entra = msjs[i];
     sale.classList.remove('activo');
-    sale.classList.add('saliendo');
-    setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
-    msjs[i].classList.add('activo');
+    if (dir > 0){
+      sale.classList.add('saliendo');
+      setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
+    } else {
+      // el que entra arranca arriba sin transición; el que sale vuelve solo
+      // a su sitio de reposo, abajo
+      entra.classList.remove('saliendo');
+      entra.style.transition = 'none';
+      entra.style.transform = 'translateY(-115%)';
+      void entra.offsetWidth;
+      entra.style.transition = entra.style.transform = '';
+    }
+    entra.classList.add('activo');
   }
   function arrancar(){ if (!reloj && !reduce) reloj = setInterval(pasar, 5200); }
   function parar(){ if (reloj) { clearInterval(reloj); reloj = null; } }
+  Array.prototype.forEach.call(tira.querySelectorAll('.tira-flecha'), function(b){
+    b.addEventListener('click', function(){
+      pasar(+b.getAttribute('data-dir'));
+      // en táctil no hay hover que pause: se reinicia la cuenta para que el
+      // mensaje elegido no se vaya enseguida
+      if (reloj) { parar(); arrancar(); }
+    });
+  });
   tira.addEventListener('mouseenter', parar);
   tira.addEventListener('mouseleave', arrancar);
   tira.addEventListener('focusin', parar);
@@ -1717,6 +1833,27 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     if (document.hidden) parar(); else arrancar();
   });
   arrancar();
+})();
+
+(function(){  // volver arriba: visible pasada la primera pantalla
+  var b = document.querySelector('.subir');
+  if (!b) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pendiente = false;
+  function mirar(){
+    pendiente = false;
+    b.classList.toggle('visible', window.scrollY > window.innerHeight * .9);
+  }
+  window.addEventListener('scroll', function(){
+    if (!pendiente) { pendiente = true; requestAnimationFrame(mirar); }
+  }, {passive:true});
+  b.addEventListener('click', function(e){
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+    // con teclado (detail 0) el foco no se pierde con el botón: va al primer
+    // enlace de la página
+    if (e.detail === 0) { var s = document.querySelector('.saltar'); if (s) s.focus({preventScroll:true}); }
+  });
+  mirar();
 })();
 </script>
 </body>

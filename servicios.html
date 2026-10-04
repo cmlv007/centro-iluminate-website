@@ -31,8 +31,9 @@
   --nogal:#8A6540; --nogal-osc:#4A3521;
   /* arcilla — bandas de sección (antes marrón oscuro) */
   --arcilla:#C2B09B;
-  /* tinta */
-  --tinta:#2B3648;
+  /* tinta: texto de lectura. Era un azul de tinta (#2B3648) de la primera paleta;
+     ahora es el marrón oscuro del sitio, el mismo de --nogal-osc */
+  --tinta:#4A3521;
   /* acentos */
   --miel:#E3B23C; --miel-suave:#F7E3B0; --turquesa:#79C0CA;
   --titulo:#663F2E;
@@ -113,6 +114,17 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 .tira-msj.activo{opacity:1;transform:none;pointer-events:auto}
 .tira-msj.saliendo{opacity:0;transform:translateY(-115%)}
 .tira-bar{margin:0 .7rem;opacity:.45}
+/* flechas para pasar los mensajes a mano: van ANTES del visor, pegadas al
+   mensaje (el margen negativo descuenta parte del gap de .tira-cols), así se
+   leen como parte de él y no se confunden con el horario de la derecha */
+.tira-ctrl{flex:none;display:flex;align-items:center;gap:.3rem;margin-right:-.6rem}
+.tira-flecha{display:grid;place-items:center;width:1.45rem;height:1.45rem;padding:0;
+  border:0;border-radius:50%;background:transparent;
+  color:inherit;cursor:pointer;
+  transition:background .25s ease,border-color .25s ease,color .25s ease}
+.tira-flecha:hover{background:rgba(239,227,214,.16);color:#fff}
+.tira-flecha:focus-visible{outline:2px solid var(--boton);outline-offset:2px}
+.tira-flecha svg{width:.78rem;height:.78rem}
 .tira a{color:#fff;font-weight:700;text-decoration:none;margin-left:.35rem}
 .tira a:hover{text-decoration:underline}
 .tira-horario{flex:none;display:flex;align-items:center;gap:.5rem;margin:0;white-space:nowrap}
@@ -120,10 +132,12 @@ section{padding:clamp(4.5rem,9vw,7.5rem) 0;position:relative}
 /* el sabado es lo primero que sobra cuando la tira se estrecha: por debajo
    de ~740px el mensaje que rota a la izquierda chocaria con el horario
    (medido: a 820px aun quedan ~80px de aire entre los dos) */
-@media(max-width:800px){.tira-sab{display:none}}
+@media(max-width:900px){.tira-sab{display:none}}
 @media(max-width:560px){
   .tira{font-size:.72rem}
   .tira-visor{height:3.3rem}
+  /* en el dedo, un blanco un poco más grande */
+  .tira-flecha{width:1.85rem;height:1.85rem}
   /* el horario cedería demasiado ancho a los mensajes que rotan */
   .tira-horario{display:none}
 }
@@ -300,11 +314,12 @@ footer a:hover{color:var(--boton)}
 }
 @media(max-width:480px){.pie-cols{grid-template-columns:1fr}}
 /* versión reducida del logotipo: isotipo + nombre armados aquí mismo */
-.pie-logo{display:inline-flex;align-items:center;gap:.8rem;margin-bottom:1.35rem}
-.pie-logo svg{width:42px;height:auto;flex:none}
-.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.45rem;line-height:1;
+.pie-logo{display:inline-flex;align-items:center;gap:1.05rem;margin-bottom:1.35rem}
+.pie-logo img{width:80px;height:80px;flex:none;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 1px rgba(239,227,214,.14)}
+.pie-logo b{font-family:var(--display);font-weight:500;font-size:1.9rem;line-height:1;
   letter-spacing:-.01em;color:#FFF7EE;display:block}
-.pie-logo small{display:block;margin-top:.28rem;font-size:.58rem;font-weight:600;
+.pie-logo small{display:block;margin-top:.34rem;font-size:.76rem;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;color:var(--boton)}
 .pie-frase{max-width:36ch;line-height:1.75;margin:0 0 1.3rem}
 /* el ícono no debe empujar las dos líneas: se alinea con la primera */
@@ -636,6 +651,14 @@ main section[id]{scroll-margin-top:5rem}
   .portada-planes-cols{grid-template-columns:1fr;text-align:center;gap:2.2rem}
   .portada-planes .bajada{margin-inline:auto}
   .abanico{width:min(100%,300px)}
+}
+/* en el teléfono el abanico abierto ya no cabe: la foto de atrás, girada y
+   corrida a la izquierda, se cortaba en el borde de la pantalla */
+@media(max-width:520px){
+  /* girada, la esquina de arriba de la foto de atrás se abre ~140px a la
+     izquierda de su eje; la de adelante deja aire a la derecha: el abanico
+     se achica un punto y se corre ese aire hacia la derecha */
+  .abanico{width:min(68%,250px);transform:translateX(12%)}
   /* apilada, la flor se recoge —40% más grande que antes seguiría siendo
      147→210px, y a este ancho se comería el pie de las fotografías— */
   .deco-flor{width:clamp(118px,29vw,168px);opacity:.62;
@@ -854,6 +877,10 @@ main section[id]{scroll-margin-top:5rem}
     scrollbar-width:none;-webkit-overflow-scrolling:touch;
     padding-bottom:.3rem}
   .terapias-lista::-webkit-scrollbar{display:none}
+  /* sólo se ven dos o tres de las cinco: el borde derecho se desvanece para
+     avisar que la fila sigue hacia el costado */
+  .terapias-lista{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);
+    mask-image:linear-gradient(to right,#000 82%,transparent);padding-right:2.5rem}
   .terapia-tab{width:auto;flex:none;
     padding:.75rem 1rem .8rem 1.8rem;font-size:.94rem}
   .terapia-tab.activa{padding-left:1.8rem}
@@ -1077,7 +1104,7 @@ main section[id]{scroll-margin-top:5rem}
    El rótulo cambia solo: los dos textos están en el marcado y `[open]` decide
    cuál se ve. */
 .pasos-caja summary{cursor:pointer;list-style:none;align-self:flex-start;
-  display:inline-flex;align-items:center;gap:.5rem;
+  display:inline-flex;align-items:center;gap:.8rem;
   font-family:var(--texto);font-weight:700;font-size:.83rem;color:var(--titulo);
   transition:color .25s ease}
 /* el triángulo de fábrica: `::marker` en los navegadores al día, el
@@ -1089,9 +1116,26 @@ main section[id]{scroll-margin-top:5rem}
 .vermas-abierto{display:none}
 .pasos-caja[open] > summary .vermas-cerrado{display:none}
 .pasos-caja[open] > summary .vermas-abierto{display:inline}
-/* la flecha, sin círculo ni halo: sólo gira al abrir */
-.pasos-chevron{flex:none;display:grid;place-items:center;color:var(--nogal);
-  transition:transform .35s cubic-bezier(.22,1,.36,1)}
+/* la flecha gira al abrir. Mientras está cerrada, una aurora de luz brota
+   desde su centro en bucle —dos ondas desfasadas medio ciclo, así siempre hay
+   una creciendo— para invitar al clic. Abierto el itinerario ya no hace falta
+   llamar la atención y se apaga. La regla global de prefers-reduced-motion
+   también la detiene. */
+.pasos-chevron{flex:none;position:relative;isolation:isolate;display:grid;place-items:center;
+  color:var(--nogal);transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.pasos-chevron::before,.pasos-chevron::after{content:"";position:absolute;z-index:-1;
+  left:50%;top:50%;width:1.6rem;height:1.6rem;margin:-.8rem 0 0 -.8rem;border-radius:50%;
+  background:radial-gradient(circle,rgba(253,226,182,.9) 0%,rgba(250,222,160,.45) 38%,
+    rgba(250,222,160,0) 70%);
+  opacity:0;pointer-events:none;
+  animation:pasos-aurora 2.6s cubic-bezier(.22,1,.36,1) infinite}
+.pasos-chevron::after{animation-delay:1.3s}
+@keyframes pasos-aurora{
+  0%{opacity:0;transform:scale(.25)}
+  18%{opacity:1}
+  100%{opacity:0;transform:scale(1.55)}
+}
+.pasos-caja[open] .pasos-chevron::before,.pasos-caja[open] .pasos-chevron::after{animation:none;opacity:0}
 .pasos-caja[open] .pasos-chevron{transform:rotate(180deg)}
 
 /* un <details> no anima al abrirse; la lista entra sola para que el salto no
@@ -1202,7 +1246,9 @@ main section[id]{scroll-margin-top:5rem}
   object-position:var(--foco,50% 50%)}
 .apoyo-info{display:flex;flex-direction:column;justify-content:center;gap:1.45rem;
   min-width:0;height:100%;overflow-y:auto;
-  padding:2.5rem max(1.5rem,calc((100vw - var(--ancho)) / 2 + 1.5rem)) 2.5rem
+  /* el mínimo de la derecha deja la canaleta de los puntos libre: con 1.5rem
+     el texto llegaba justo donde viven (a ~1024px se tocaban) */
+  padding:2.5rem max(3.2rem,calc((100vw - var(--ancho)) / 2 + 1.5rem)) 2.5rem
     clamp(1.8rem,4vw,3.2rem)}
 /* título e insignias en el mismo renglón; si no caben, las insignias bajan */
 .apoyo-cab{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem}
@@ -1229,9 +1275,24 @@ main section[id]{scroll-margin-top:5rem}
 .agendar.instagram{background:var(--tarjeta);border:1px solid var(--duna)}
 .agendar.instagram:hover{border-color:var(--boton)}
 
+/* En angosto la franja deja de ser una secuencia de láminas a pantalla
+   completa: con la foto arriba, lo que queda de pantalla no alcanza para el
+   texto (Terapia Floral, con su lista, no cabe en un teléfono de 640px de
+   alto) y terminaba en un scroll DENTRO de la lámina, que en el dedo atrapa.
+   Aquí cada servicio mide lo que necesita, la página baja de corrido sin
+   saltos (el asistente de JS tampoco actúa bajo 820px) y los puntos de la
+   derecha se van: sin láminas que contar se montaban sobre el texto. */
 @media(max-width:820px){
-  .apoyo{grid-template-columns:1fr;grid-template-rows:42vh minmax(0,1fr)}
-  .apoyo-info{padding:1.6rem 1.5rem}
+  .familia-intro,.familia-eval,.apoyo{height:auto;scroll-snap-align:none;scroll-snap-stop:normal}
+  .familia-intro{min-height:0;padding-top:clamp(4.5rem,14vw,6rem);overflow:visible}
+  .familia-eval{padding-block:clamp(4rem,12vw,5.5rem);overflow:visible}
+  .apoyo{grid-template-columns:1fr;grid-template-rows:clamp(220px,58vw,400px) auto}
+  .apoyo-info{height:auto;overflow:visible;padding:2rem clamp(1.25rem,5vw,2rem) 3.2rem}
+  .familia-puntos{display:none}
+  /* el ratón que invita a seguir bajando habla de una rueda que en el dedo no
+     existe, y con la apertura a su alto natural se montaba sobre las cajas */
+  .familia-scroll{display:none}
+  .familia-intro .env{padding-bottom:clamp(3.5rem,10vw,4.5rem)}
 }
 @media(max-width:520px){.apoyo-lista{grid-template-columns:1fr}}
 
@@ -1254,8 +1315,61 @@ main section[id]{scroll-margin-top:5rem}
    letter-spacing .09em) dentro de una rejilla 1fr auto 1fr que ya lleva la
    marca a la izquierda y el botón de WhatsApp a la derecha: con cinco
    desborda el .env entre ~821 y ~950px de pantalla. */
-@media(max-width:1020px){
-  .sticky-enlaces{gap:1.4rem}
+@media(max-width:1100px){
+  .sticky-enlaces{gap:1.2rem}
+}
+/* El botón de WhatsApp se partía en dos o tres renglones entre 821 y 1099px
+   (medido) y engordaba la barra. Va siempre en un renglón; y donde ni con los
+   enlaces juntos cabe entero (821-940px) queda sólo el ícono, en un círculo.
+   El texto no se borra del marcado: `font-size:0` lo esconde a la vista pero
+   los lectores de pantalla lo siguen leyendo como nombre del enlace. */
+.sticky-cta{white-space:nowrap}
+/* la bajada de la marca se partía en dos renglones a ~821-880px */
+.sticky-marca small{white-space:nowrap}
+@media(min-width:821px) and (max-width:940px){
+  .sticky-cta{font-size:0;gap:0;padding:.7rem}
+  .sticky-cta svg{width:18px;height:18px}
+}
+
+/* ── volver arriba ──
+   Aparece pasada la primera pantalla y lleva de vuelta al inicio. Amarillo de
+   botones para que se lea igual sobre beige, sobre las bandas oscuras y sobre
+   el pie. z-index bajo la cabecera fija (110) y los diálogos (capa superior). */
+.subir{position:fixed;z-index:105;right:clamp(1rem,2.4vw,1.8rem);bottom:clamp(1rem,2.4vw,1.8rem);
+  width:3rem;height:3rem;display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:var(--boton);color:var(--titulo);cursor:pointer;
+  box-shadow:0 12px 26px -12px rgba(74,53,33,.6),0 0 0 1px rgba(74,53,33,.08);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .35s ease,visibility .35s ease,transform .35s cubic-bezier(.22,1,.36,1),background .25s ease}
+.subir.visible{opacity:1;visibility:visible;transform:none}
+.subir.visible:hover{background:var(--miel);transform:translateY(-3px)}
+.subir:focus-visible{outline:2px solid var(--nogal-osc);outline-offset:3px}
+.subir svg{width:1.3rem;height:1.3rem}
+
+/* ── menú pegado arriba en el teléfono (páginas interiores) ──
+   Hasta ahora la cabecera iba en el flujo y se iba con el scroll; en la
+   portada, en cambio, ya baja con la pantalla. Aquí la zona entera (tira +
+   barra) es `sticky` con un `top` negativo igual al alto de la tira: la tira
+   sale con el scroll y la barra con el menú queda fija. Va en 820px porque
+   desde ahí arriba el menú ya cabe a la vista y vive en `.cab-barra`. */
+@media(max-width:820px){
+  .cabecera-zona{position:sticky;top:-2.2rem;z-index:100;
+    box-shadow:0 8px 24px -18px rgba(74,53,33,.45)}
+}
+@media(max-width:560px){.cabecera-zona{top:-3.3rem}}
+
+/* ── responsive común ──
+   Cejilla centrada: si el texto no cabe en un renglón, la rayita quedaba
+   pegada a la izquierda de un bloque de dos líneas. En angosto la rayita
+   sube y queda centrada SOBRE el texto, que se ve igual de intencional con
+   una línea o con dos.
+   Títulos: los <br> que ordenan el renglón en escritorio dejan palabras
+   sueltas en un teléfono («cada / niño / a iluminar»). En angosto se ignoran
+   y el navegador equilibra los renglones él solo. */
+@media(max-width:560px){
+  .enc.centro .cejilla{flex-direction:column;gap:.55rem;text-align:center;text-wrap:balance}
+  main h1 br,main h2 br{display:none}
+  main h1,main h2{text-wrap:balance}
 }
 </style>
 </head>
@@ -1269,9 +1383,13 @@ main section[id]{scroll-margin-top:5rem}
        entre ellos), a la derecha el horario, siempre visible -->
   <div class="tira">
     <div class="env tira-cols">
+      <div class="tira-ctrl">
+        <button class="tira-flecha" type="button" data-dir="-1" aria-label="Mensaje anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+        <button class="tira-flecha" type="button" data-dir="1" aria-label="Mensaje siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
       <div class="tira-visor">
         <span class="tira-msj activo">Av. Las Condes 10.415, of. 9<span class="tira-bar" aria-hidden="true">|</span><a href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank" rel="noopener">Encuéntranos en Google Maps <span aria-hidden="true">&#8594;</span></a></span>
-        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56975813632">+56 9 7581 3632</a></span>
+        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56926122138">+56 9 2612 2138</a></span>
       </div>
       <p class="tira-horario">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
@@ -1313,7 +1431,7 @@ main section[id]{scroll-margin-top:5rem}
           <li><a href="centro-iluminate-sitio.html#contacto">Contacto</a></li>
         </ul>
       </nav>
-      <a class="btn btn-p sticky-cta" href="https://wa.me/56975813632" target="_blank"
+      <a class="btn btn-p sticky-cta" href="https://wa.me/56926122138" target="_blank"
         rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Reserva por WhatsApp</a>
     </div>
   </header>
@@ -1399,7 +1517,7 @@ main section[id]{scroll-margin-top:5rem}
             </details>
             <div class="programa-pie">
               <p class="precio"><b>$220.000</b><small>4 sesiones incluidas</small></p>
-              <a class="programa-cta" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20Evaluaci%C3%B3n%20Psicol%C3%B3gica%20de%204%20sesiones." target="_blank" rel="noopener"
+              <a class="programa-cta" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20Evaluaci%C3%B3n%20Psicol%C3%B3gica%20de%204%20sesiones." target="_blank" rel="noopener"
                 aria-label="Consultar por la Evaluación psicológica por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Consultar</a>
             </div>
           </div>
@@ -1433,7 +1551,7 @@ main section[id]{scroll-margin-top:5rem}
             </details>
             <div class="programa-pie">
               <p class="precio"><b>$220.000</b><small>4 sesiones incluidas</small></p>
-              <a class="programa-cta" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20Intervenci%C3%B3n%20Psicol%C3%B3gica%20Breve." target="_blank" rel="noopener"
+              <a class="programa-cta" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20Intervenci%C3%B3n%20Psicol%C3%B3gica%20Breve." target="_blank" rel="noopener"
                 aria-label="Consultar por la Intervención psicológica breve por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Consultar</a>
             </div>
           </div>
@@ -1470,7 +1588,7 @@ main section[id]{scroll-margin-top:5rem}
             </details>
             <div class="programa-pie">
               <p class="precio"><b>$220.000</b><small>proceso completo</small></p>
-              <a class="programa-cta" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20programa%20de%20acompa%C3%B1amiento%20para%20la%20Credencial%20de%20Discapacidad%20%28COMPIN%29." target="_blank" rel="noopener"
+              <a class="programa-cta" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20programa%20de%20acompa%C3%B1amiento%20para%20la%20Credencial%20de%20Discapacidad%20%28COMPIN%29." target="_blank" rel="noopener"
                 aria-label="Consultar por el programa de Credencial de Discapacidad por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Consultar</a>
             </div>
           </div>
@@ -1578,7 +1696,7 @@ main section[id]{scroll-margin-top:5rem}
                 <span class="disponible-caras"><img src="img/terapeutas/catalina-vargas.webp" alt="" width="763" height="801" loading="lazy" decoding="async"><img src="img/terapeutas/emilia-middleton.webp" alt="" width="763" height="801" loading="lazy" decoding="async"><img src="img/terapeutas/pascuala-vergara.webp" alt="" width="763" height="801" loading="lazy" decoding="async"></span>
                 <span class="disponible-txt"><b>4 terapeutas disponibles</b></span>
               </div>
-              <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Terapia%20ocupacional%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Terapia ocupacional por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
+              <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Terapia%20ocupacional%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Terapia ocupacional por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
           </div>
           <div class="tp-figura">
             <img class="tp-foto" src="img/terapia-ocupacional.webp" width="900" height="1200" loading="lazy" decoding="async"
@@ -1604,7 +1722,7 @@ main section[id]{scroll-margin-top:5rem}
                 <span class="disponible-caras"><img src="img/terapeutas/anita-reyes.webp" alt="" width="763" height="801" loading="lazy" decoding="async"></span>
                 <span class="disponible-txt"><small>Terapeuta disponible:</small><b>Anita Reyes</b></span>
               </div>
-              <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Fonoaudiolog%C3%ADa%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Fonoaudiología por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
+              <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Fonoaudiolog%C3%ADa%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Fonoaudiología por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
           </div>
           <div class="tp-figura">
             <img class="tp-foto" src="img/fonoaudiologia.webp" width="848" height="1257" loading="lazy" decoding="async"
@@ -1630,7 +1748,7 @@ main section[id]{scroll-margin-top:5rem}
                 <span class="disponible-caras"><img src="img/terapeutas/paola-rivera.webp" alt="" width="763" height="801" loading="lazy" decoding="async"></span>
                 <span class="disponible-txt"><small>Terapeuta disponible:</small><b>Paola Rivera</b></span>
               </div>
-              <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Psicopedagog%C3%ADa%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Psicopedagogía por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
+              <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Psicopedagog%C3%ADa%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Psicopedagogía por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
           </div>
           <div class="tp-figura">
             <img class="tp-foto" src="img/psicopedagogia-mesa.webp" width="900" height="1350" loading="lazy" decoding="async"
@@ -1656,7 +1774,7 @@ main section[id]{scroll-margin-top:5rem}
                 <span class="disponible-caras"><img src="img/terapeutas/denise-sznaider.webp" alt="" width="763" height="801" loading="lazy" decoding="async"><span class="disponible-ini" aria-hidden="true">CV</span></span>
                 <span class="disponible-txt"><b>2 terapeutas disponibles</b></span>
               </div>
-              <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Psicolog%C3%ADa%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Psicología por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
+              <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Psicolog%C3%ADa%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Psicología por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
           </div>
           <div class="tp-figura">
             <img class="tp-foto" src="img/psicologia.webp" width="893" height="1340" loading="lazy" decoding="async"
@@ -1682,7 +1800,7 @@ main section[id]{scroll-margin-top:5rem}
                 <span class="disponible-caras"><span class="disponible-ini" aria-hidden="true">JH</span></span>
                 <span class="disponible-txt"><small>Terapeuta disponible:</small><b>Javiera Hosiasson</b></span>
               </div>
-              <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20atenci%C3%B3n%20de%20Odontopediatr%C3%ADa%20adaptada%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Odontopediatría adaptada por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
+              <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20atenci%C3%B3n%20de%20Odontopediatr%C3%ADa%20adaptada%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener" aria-label="Agendar Odontopediatría adaptada por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar</a></div>
           </div>
           <div class="tp-figura">
             <img class="tp-foto" src="img/odontopediatria.webp" width="710" height="1060" loading="lazy" decoding="async"
@@ -1694,7 +1812,7 @@ main section[id]{scroll-margin-top:5rem}
     </div>
 
     <p class="seccion-nota rev">¿No sabes con qué terapia partir?
-      <a href="https://wa.me/56975813632?text=Hola%2C%20no%20s%C3%A9%20con%20qu%C3%A9%20terapia%20partir.%20%C2%BFMe%20pueden%20orientar%3F" target="_blank" rel="noopener">Escríbenos y te orientamos</a>.</p>
+      <a href="https://wa.me/56926122138?text=Hola%2C%20no%20s%C3%A9%20con%20qu%C3%A9%20terapia%20partir.%20%C2%BFMe%20pueden%20orientar%3F" target="_blank" rel="noopener">Escríbenos y te orientamos</a>.</p>
   </div>
 </section>
 
@@ -1711,7 +1829,7 @@ main section[id]{scroll-margin-top:5rem}
       <div class="env">
         <div class="enc centro">
           <p class="cejilla c-arcilla">Otros servicios</p>
-          <h2 class="h-l">En Centro Ilumínate<br>encuentras más que terapias</h2>
+          <h2 class="h-l">En Centro Ilumínate <br>encuentras más que terapias</h2>
         </div>
         <div class="familia-cajas">
           <div class="familia-caja">
@@ -1766,7 +1884,7 @@ main section[id]{scroll-margin-top:5rem}
           <li>Sobrecarga sensorial</li>
           <li>Procesos TEA y TDAH</li>
         </ul>
-        <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20consultar%20por%20una%20Formulaci%C3%B3n%20Personalizada%20de%20Terapia%20Floral%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar Terapia Floral</a>
+        <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20consultar%20por%20una%20Formulaci%C3%B3n%20Personalizada%20de%20Terapia%20Floral%20en%20Centro%20Ilum%C3%ADnate." target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar Terapia Floral</a>
       </div>
     </article>
 
@@ -1803,7 +1921,7 @@ main section[id]{scroll-margin-top:5rem}
         </div>
         <p>Agenda una sesión online con nuestros terapeutas para ordenar el panorama
           escolar cuando necesitas una respuesta rápida y no sabes por dónde partir.</p>
-        <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Orientaci%C3%B3n%20Educativa%20Express." target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar Sesión</a>
+        <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20Orientaci%C3%B3n%20Educativa%20Express." target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Agendar Sesión</a>
       </div>
     </article>
 
@@ -1850,7 +1968,7 @@ main section[id]{scroll-margin-top:5rem}
             <span class="eval-valor">Valor total:</span>
             <p class="precio"><b>$220.000</b></p>
           </div>
-          <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ADOS-2" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación ADOS-2 por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
+          <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ADOS-2" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación ADOS-2 por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
         </div>
       </article>
 
@@ -1872,7 +1990,7 @@ main section[id]{scroll-margin-top:5rem}
             <span class="eval-valor">Valor total:</span>
             <p class="precio"><b>$180.000</b></p>
           </div>
-          <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ABLLS-R" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación ABLLS-R por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
+          <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20ABLLS-R" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación ABLLS-R por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
         </div>
       </article>
 
@@ -1894,7 +2012,7 @@ main section[id]{scroll-margin-top:5rem}
             <span class="eval-valor">Valor total:</span>
             <p class="precio"><b>$220.000</b></p>
           </div>
-          <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WISC-V" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación WISC-V por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
+          <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WISC-V" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación WISC-V por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
         </div>
       </article>
 
@@ -1916,7 +2034,7 @@ main section[id]{scroll-margin-top:5rem}
             <span class="eval-valor">Valor total:</span>
             <p class="precio"><b>$220.000</b></p>
           </div>
-          <a class="agendar" href="https://wa.me/56975813632?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WAIS-IV" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación WAIS-IV por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
+          <a class="agendar" href="https://wa.me/56926122138?text=Hola%2C%20quiero%20solicitar%20la%20Evaluaci%C3%B3n%20WAIS-IV" target="_blank" rel="noopener" aria-label="Solicitar la Evaluación WAIS-IV por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg> Solicitar Test</a>
         </div>
       </article>
 
@@ -1947,7 +2065,7 @@ main section[id]{scroll-margin-top:5rem}
       <p class="bajada">Cuéntanos tu caso por WhatsApp: te decimos qué terapia o
         evaluación corresponde, con qué especialista y con qué valores, sin
         compromiso.</p>
-      <a class="btn btn-p" href="https://wa.me/56975813632" target="_blank" rel="noopener">
+      <a class="btn btn-p" href="https://wa.me/56926122138" target="_blank" rel="noopener">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
         Escríbenos por WhatsApp</a>
     </div>
@@ -1962,10 +2080,7 @@ main section[id]{scroll-margin-top:5rem}
 
       <div class="pie-marca">
         <a class="pie-logo" href="centro-iluminate-sitio.html" aria-label="Ilumínate, Centro de Terapias — ir al inicio">
-          <svg viewBox="0 0 539 461" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M380.589 11.3553C398.352 9.64492 414.139 22.6583 415.849 40.4211L426.525 151.29C433.003 148.274 440.095 146.289 447.613 145.565C483.138 142.144 514.711 168.17 518.132 203.696C521.553 239.221 495.526 270.793 460 274.214C452.482 274.938 445.142 274.342 438.207 272.618L449.399 388.849C451.109 406.611 438.096 422.397 420.333 424.107L71.9063 457.657C54.1434 459.367 38.357 446.354 36.6466 428.591L3.09692 80.1646C1.38659 62.4018 14.3999 46.6153 32.1628 44.905L380.589 11.3553Z" fill="#FDE34D" style="fill:#FDE34D;fill:color(display-p3 0.9922 0.8902 0.3020);fill-opacity:1;"/>
-            <path d="M167.842 117.984L171.725 117.61L189.866 116.576C206.597 115.203 223.305 113.594 239.99 111.75L257.995 109.304L261.878 108.93L264.93 140.627L254.592 140.554C241.178 141.845 243.965 141.933 241.209 142.911L238.84 144.208L238.202 144.982L254.972 319.146L255.746 319.784L258.319 320.605C261.211 321.039 258.492 321.657 271.906 320.365L282.04 318.321L285.092 350.018L281.209 350.392L263.068 351.426C246.337 352.8 229.63 354.408 212.944 356.253L194.939 358.699L191.056 359.073L188.004 327.375L198.342 327.449C211.756 326.157 208.969 326.069 211.725 325.091L214.094 323.794L214.732 323.02L197.962 148.857L197.188 148.219L194.615 147.398C191.723 146.963 194.442 146.345 181.028 147.637L170.894 149.682L167.842 117.984Z" fill="#114388" style="fill:#114388;fill:color(display-p3 0.0667 0.2627 0.5333);fill-opacity:1;"/>
-          </svg>
+          <img src="img/logotipo-circular-centro-iluminate.webp" alt="" width="560" height="560" loading="lazy" decoding="async">
           <span>
             <b>ilumínate</b>
             <small>Centro de Terapias</small>
@@ -1978,7 +2093,7 @@ main section[id]{scroll-margin-top:5rem}
             rel="noopener" aria-label="Instagram de Centro Ilumínate"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></a>
           <a class="pie-red" href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank"
             rel="noopener" aria-label="Ver la ubicación del centro en Google Maps"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s7-6.6 7-11.5a7 7 0 1 0-14 0c0 4.9 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.7"/></svg></a>
-          <a class="pie-red" href="https://wa.me/56975813632" target="_blank"
+          <a class="pie-red" href="https://wa.me/56926122138" target="_blank"
             rel="noopener" aria-label="Escribir por WhatsApp"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg></a>
         </div>
       </div>
@@ -2028,6 +2143,8 @@ main section[id]{scroll-margin-top:5rem}
   </div>
 </footer>
 
+<button class="subir" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5.5"/><path d="M5.5 12 12 5.5 18.5 12"/></svg></button>
+
 <script>
 (function(){  // menú móvil
   var b = document.querySelector('.hamb'), m = document.getElementById('menu');
@@ -2055,22 +2172,44 @@ main section[id]{scroll-margin-top:5rem}
     io.observe(e);
   });
 })();
-(function(){  // tira: rota un mensaje a la vez
+(function(){  // tira: rota un mensaje a la vez; las flechas lo cambian a mano
   var tira = document.querySelector('.tira');
   var msjs = tira ? Array.prototype.slice.call(tira.querySelectorAll('.tira-msj')) : [];
   if (msjs.length < 2) return;
   var i = 0, reloj = null;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function pasar(){
+  // hacia adelante el siguiente sube desde abajo (el relevo de siempre); hacia
+  // atrás el anterior baja desde arriba, para que el movimiento siga a la flecha
+  function pasar(dir){
+    dir = dir || 1;
     var sale = msjs[i];
-    i = (i + 1) % msjs.length;
+    i = (i + dir + msjs.length) % msjs.length;
+    var entra = msjs[i];
     sale.classList.remove('activo');
-    sale.classList.add('saliendo');
-    setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
-    msjs[i].classList.add('activo');
+    if (dir > 0){
+      sale.classList.add('saliendo');
+      setTimeout(function(){ sale.classList.remove('saliendo'); }, 650);
+    } else {
+      // el que entra arranca arriba sin transición; el que sale vuelve solo
+      // a su sitio de reposo, abajo
+      entra.classList.remove('saliendo');
+      entra.style.transition = 'none';
+      entra.style.transform = 'translateY(-115%)';
+      void entra.offsetWidth;
+      entra.style.transition = entra.style.transform = '';
+    }
+    entra.classList.add('activo');
   }
   function arrancar(){ if (!reloj && !reduce) reloj = setInterval(pasar, 5200); }
   function parar(){ if (reloj) { clearInterval(reloj); reloj = null; } }
+  Array.prototype.forEach.call(tira.querySelectorAll('.tira-flecha'), function(b){
+    b.addEventListener('click', function(){
+      pasar(+b.getAttribute('data-dir'));
+      // en táctil no hay hover que pause: se reinicia la cuenta para que el
+      // mensaje elegido no se vaya enseguida
+      if (reloj) { parar(); arrancar(); }
+    });
+  });
   tira.addEventListener('mouseenter', parar);
   tira.addEventListener('mouseleave', arrancar);
   tira.addEventListener('focusin', parar);
@@ -2221,19 +2360,14 @@ main section[id]{scroll-margin-top:5rem}
       if (r.top <= medio && r.bottom > medio) actual = i;
     });
     marcas.forEach(function(p, idx){ p.classList.toggle('activo', idx === actual - 1); });
+    // se asoman sólo mientras una lámina cruza la mitad de la pantalla: con
+    // la franja apenas asomando arriba o abajo, se montaban sobre la sección
+    // vecina (el título del cierre, por ejemplo)
+    puntos.classList.toggle('a-la-vista', actual >= 0);
   }
   window.addEventListener('scroll', pintar, {passive:true});
   window.addEventListener('resize', pintar);
   pintar();
-  // sólo se asoman mientras la franja está a la vista. El umbral es 0 porque
-  // la franja mide cinco pantallas: nunca se ve la mitad de ella
-  if ('IntersectionObserver' in window){
-    new IntersectionObserver(function(entradas){
-      entradas.forEach(function(e){
-        puntos.classList.toggle('a-la-vista', e.isIntersecting);
-      });
-    }, {threshold:0}).observe(filas);
-  } else { puntos.classList.add('a-la-vista'); }
 })();
 (function(){  // salto asistido: al soltar el scroll DENTRO de la franja de
               // servicios, la lectura calza en la lámina más cercana. Fuera de
@@ -2245,8 +2379,10 @@ main section[id]{scroll-margin-top:5rem}
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var reloj = null, ajustando = false;
 
+  var angosto = window.matchMedia('(max-width:820px)');
   function calzar(){
-    if (ajustando) return;
+    // en angosto las láminas miden lo que su texto: no hay nada que calzar
+    if (ajustando || angosto.matches) return;
     var caja = filas.getBoundingClientRect();
     // sólo cuando la franja cubre la pantalla entera: así, al entrar o salir de
     // ella, el scroll sigue siendo el de siempre
@@ -2267,6 +2403,27 @@ main section[id]{scroll-margin-top:5rem}
     clearTimeout(reloj);
     reloj = setTimeout(calzar, 140);
   }, {passive:true});
+})();
+
+(function(){  // volver arriba: visible pasada la primera pantalla
+  var b = document.querySelector('.subir');
+  if (!b) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pendiente = false;
+  function mirar(){
+    pendiente = false;
+    b.classList.toggle('visible', window.scrollY > window.innerHeight * .9);
+  }
+  window.addEventListener('scroll', function(){
+    if (!pendiente) { pendiente = true; requestAnimationFrame(mirar); }
+  }, {passive:true});
+  b.addEventListener('click', function(e){
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+    // con teclado (detail 0) el foco no se pierde con el botón: va al primer
+    // enlace de la página
+    if (e.detail === 0) { var s = document.querySelector('.saltar'); if (s) s.focus({preventScroll:true}); }
+  });
+  mirar();
 })();
 </script>
 </body>

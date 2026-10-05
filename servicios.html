@@ -1397,6 +1397,27 @@ main section[id]{scroll-margin-top:5rem}
   .terapias-lista{cursor:grab}
   .terapias-lista.arrastrando{cursor:grabbing;user-select:none}
 }
+/* ── segunda tanda responsive (05-10-2026) ── */
+.eval-corto{display:none}
+@media(max-width:820px){
+  /* terapias: pestañas sin sombra; «Agendar» a la derecha */
+  .terapia-tab.activa{box-shadow:none}
+  .tp .terapia-pie .agendar{margin-left:auto}
+  /* las tarjetas se arrastran de lado (ver script): el gesto horizontal es
+     del script y el vertical sigue siendo el scroll de la página. El clip
+     evita que la tarjeta, al salir de lado, ensanche la página */
+  .terapias-panel{touch-action:pan-y}
+  .terapias-panel.deslizando{user-select:none;cursor:grabbing}
+  #terapias{overflow-x:clip}
+  /* la nota de abajo en dos renglones: la pregunta, y debajo el enlace */
+  .nota-preg{display:block}
+  /* evaluaciones: «Test» en vez de «Evaluación» sólo en los botones, y el
+     pie de la tarjeta (valor total y botón) centrado y apilado */
+  .eval-largo{display:none}
+  .eval-corto{display:inline}
+  .eval-pie{flex-direction:column;justify-content:center}
+  .eval-valor-caja{justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -1837,7 +1858,7 @@ main section[id]{scroll-margin-top:5rem}
       </div>
     </div>
 
-    <p class="seccion-nota rev">¿No sabes con qué terapia partir?
+    <p class="seccion-nota rev"><span class="nota-preg">¿No sabes con qué terapia partir?</span>
       <a href="https://wa.me/56926122138?text=Hola%2C%20no%20s%C3%A9%20con%20qu%C3%A9%20terapia%20partir.%20%C2%BFMe%20pueden%20orientar%3F" target="_blank" rel="noopener">Escríbenos y te orientamos</a>.</p>
   </div>
 </section>
@@ -1964,13 +1985,13 @@ main section[id]{scroll-margin-top:5rem}
     <div class="evals-caja rev">
       <div class="evals-tabs" role="tablist" aria-label="Evaluaciones">
         <button class="eval-tab activa" type="button" role="tab" id="etab-ados"
-          aria-selected="true" aria-controls="epanel-ados">Evaluación ADOS-2</button>
+          aria-selected="true" aria-controls="epanel-ados"><span class="eval-largo">Evaluación</span><span class="eval-corto">Test</span> ADOS-2</button>
         <button class="eval-tab" type="button" role="tab" id="etab-ablls"
-          aria-selected="false" aria-controls="epanel-ablls" tabindex="-1">Evaluación ABLLS-R</button>
+          aria-selected="false" aria-controls="epanel-ablls" tabindex="-1"><span class="eval-largo">Evaluación</span><span class="eval-corto">Test</span> ABLLS-R</button>
         <button class="eval-tab" type="button" role="tab" id="etab-wisc"
-          aria-selected="false" aria-controls="epanel-wisc" tabindex="-1">Evaluación WISC-V</button>
+          aria-selected="false" aria-controls="epanel-wisc" tabindex="-1"><span class="eval-largo">Evaluación</span><span class="eval-corto">Test</span> WISC-V</button>
         <button class="eval-tab" type="button" role="tab" id="etab-wais"
-          aria-selected="false" aria-controls="epanel-wais" tabindex="-1">Evaluación WAIS-IV</button>
+          aria-selected="false" aria-controls="epanel-wais" tabindex="-1"><span class="eval-largo">Evaluación</span><span class="eval-corto">Test</span> WAIS-IV</button>
       </div>
 
       <div class="evals">
@@ -2272,17 +2293,39 @@ main section[id]{scroll-margin-top:5rem}
     // clic o una flecha, `aMano()` ya lo paró antes de llamar a esta función-
     reiniciarBarra(anterior);
     if (reloj) { reiniciarBarra(i); correrBarra(i); }
+    centrar(i);
     if (enfocar) tabs[i].focus({preventScroll:true});
   }
-  // en el carril horizontal (móvil), la pestaña elegida se trae al centro.
-  // Se desplaza la lista y no la página: scrollIntoView movería también el
-  // documento si la lista quedara a medias fuera de pantalla
+  // En el carril horizontal (≤760px) la pestaña activa pasa SIEMPRE al
+  // primer puesto: las demás se corren detrás de ella en el mismo orden
+  // circular (con `order`, sin tocar el marcado ni el orden del teclado). Un
+  // desliz FLIP hace visible el reacomodo; la que da la vuelta de punta a
+  // punta no cruza toda la fila, sólo aparece en su sitio nuevo.
+  var carrilTabs = window.matchMedia('(max-width: 760px)');
   function centrar(i){
-    if (lista.scrollWidth <= lista.clientWidth + 1) return;
-    var t = tabs[i], x = t.offsetLeft - (lista.clientWidth - t.offsetWidth) / 2;
-    if (lista.scrollTo) lista.scrollTo({left:x, behavior: reduce ? 'auto' : 'smooth'});
-    else lista.scrollLeft = x;
+    if (!carrilTabs.matches){ tabs.forEach(function(t){ t.style.order = ''; }); return; }
+    var antes = tabs.map(function(t){ return t.getBoundingClientRect().left; });
+    tabs.forEach(function(t, k){ t.style.order = (k - i + tabs.length) % tabs.length; });
+    lista.scrollLeft = 0;
+    if (reduce) return;
+    var lejos = lista.clientWidth * .6;
+    tabs.forEach(function(t, k){
+      var dx = antes[k] - t.getBoundingClientRect().left;
+      if (!dx) return;
+      t.style.transition = 'none';
+      if (Math.abs(dx) > lejos) t.style.opacity = '0';
+      else t.style.transform = 'translateX(' + dx + 'px)';
+    });
+    void lista.offsetWidth;
+    tabs.forEach(function(t){
+      if (!t.style.transform && !t.style.opacity) return;
+      t.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1),opacity .4s ease .15s';
+      t.style.transform = '';
+      t.style.opacity = '';
+      setTimeout(function(){ t.style.transition = ''; }, 600);
+    });
   }
+  if (carrilTabs.addEventListener) carrilTabs.addEventListener('change', function(){ centrar(activa); });
 
   // avance automático SÓLO mientras la caja está a la vista y hasta que la
   // persona elige una pestaña: desde ahí manda ella. Y en pausa mientras el
@@ -2313,7 +2356,7 @@ main section[id]{scroll-margin-top:5rem}
   function aMano(){ manual = true; parar(); reiniciarBarra(activa); }
 
   tabs.forEach(function(t, i){
-    t.addEventListener('click', function(){ aMano(); seleccionar(i); centrar(i); });
+    t.addEventListener('click', function(){ aMano(); seleccionar(i); });
     t.addEventListener('keydown', function(e){
       var j = null, n = tabs.length;
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') j = (i + 1) % n;
@@ -2321,7 +2364,7 @@ main section[id]{scroll-margin-top:5rem}
       else if (e.key === 'Home') j = 0;
       else if (e.key === 'End') j = n - 1;
       if (j === null) return;
-      e.preventDefault(); aMano(); seleccionar(j, true); centrar(j);
+      e.preventDefault(); aMano(); seleccionar(j, true);
     });
   });
   caja.addEventListener('mouseenter', parar);
@@ -2332,6 +2375,63 @@ main section[id]{scroll-margin-top:5rem}
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) parar(); else arrancar();
   });
+  // Las tarjetas también se deslizan de lado (≤820px), con el dedo o con el
+  // mouse: hacia la izquierda pasa a la terapia siguiente y hacia la derecha a
+  // la anterior. Un gesto más vertical que horizontal se deja al navegador,
+  // que desplaza la página (`touch-action:pan-y` en el CSS).
+  var panelT = caja.querySelector('.terapias-panel');
+  var enMovil = window.matchMedia('(max-width: 820px)');
+  var gesto = null, recienDeslizada = false;
+  panelT.addEventListener('pointerdown', function(e){
+    if (!enMovil.matches || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    var t = panelT.querySelector('.tp:not([hidden])');
+    if (t) gesto = {id:e.pointerId, x:e.clientX, y:e.clientY, dx:0, t:t, activo:false};
+  });
+  panelT.addEventListener('pointermove', function(e){
+    if (!gesto || e.pointerId !== gesto.id) return;
+    var dx = e.clientX - gesto.x, dy = e.clientY - gesto.y;
+    if (!gesto.activo){
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(dy) > Math.abs(dx)) { gesto = null; return; }
+      gesto.activo = true;
+      aMano();
+      panelT.classList.add('deslizando');
+      gesto.t.style.transition = 'none';
+      try { panelT.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    gesto.dx = dx;
+    gesto.t.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx / 80) + 'deg)';
+  });
+  function finGesto(e){
+    if (!gesto || e.pointerId !== gesto.id) return;
+    var g = gesto; gesto = null;
+    if (!g.activo) return;
+    panelT.classList.remove('deslizando');
+    recienDeslizada = true;
+    setTimeout(function(){ recienDeslizada = false; }, 0);
+    var t = g.t, umbral = Math.min(90, panelT.offsetWidth * .22);
+    if (e.type === 'pointercancel' || Math.abs(g.dx) < umbral){
+      // no alcanzó: la tarjeta vuelve a su sitio
+      t.style.transition = 'transform .35s cubic-bezier(.22,1,.36,1)';
+      t.style.transform = '';
+      return;
+    }
+    var sale = g.dx < 0 ? -1 : 1;
+    t.style.transition = 'transform .22s ease-in,opacity .22s ease-in';
+    t.style.transform = 'translateX(' + sale * panelT.offsetWidth + 'px) rotate(' + sale * 4 + 'deg)';
+    t.style.opacity = '0';
+    setTimeout(function(){
+      t.style.transition = t.style.transform = t.style.opacity = '';
+      seleccionar((activa - sale + tabs.length) % tabs.length);
+    }, 220);
+  }
+  panelT.addEventListener('pointerup', finGesto);
+  panelT.addEventListener('pointercancel', finGesto);
+  // el clic con que termina un deslizamiento no abre el enlace de «Agendar»
+  panelT.addEventListener('click', function(e){
+    if (recienDeslizada){ e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
   // En el carril horizontal (≤760px) el dedo ya desliza la fila; aquí se suma
   // el arrastre con el mouse. Si hubo arrastre, el clic con que termina no
   // cambia de pestaña.

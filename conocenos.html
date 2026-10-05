@@ -1172,7 +1172,10 @@ main :focus-visible{outline-color:var(--nogal-osc)}
 @keyframes notas-desfile{to{transform:translateX(-50%)}}
 /* Se detiene al pasar el puntero o al tabular dentro: quien quiere terminar de
    leer una nota no tiene que perseguirla. */
-.notas-carril:hover .notas-pista,
+/* La pausa al pasar el puntero va sólo donde hay mouse de verdad: en el
+   teléfono el :hover queda «pegado» después de tocar y el carril no volvía
+   a andar hasta tocar en otra parte (05-10-2026). */
+@media(hover:hover){.notas-carril:hover .notas-pista{animation-play-state:paused}}
 .notas-carril:focus-within .notas-pista{animation-play-state:paused}
 
 .nota{
@@ -1332,6 +1335,61 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   .enc.centro .cejilla{flex-direction:column;gap:.55rem;text-align:center;text-wrap:balance}
   main h1 br,main h2 br{display:none}
   main h1,main h2{text-wrap:balance}
+}
+
+/* ══ RESPONSIVE DE CONÓCENOS (≤900px, donde la página pasa a una columna) ══
+   Tanda del 05-10-2026; el escritorio no cambia. */
+@media(max-width:900px){
+  /* Mi historia: primero el texto y después el retrato de Gloria */
+  .carta .historia-figura{order:2}
+  /* Cómo llegamos a ser dos: sin la llamada «9 Terapeutas…» */
+  .equipo-llamada{display:none}
+  /* El grupo de mamás azules: centrado, y la descripción un punto más chica */
+  .mamas-azules .col-texto{margin-inline:auto;text-align:center}
+  .mamas-azules p:not([class]){font-size:.9rem;line-height:1.75;text-align:center;hyphens:none}
+  .mamas-azules .invitacion{font-size:.97rem}
+  /* Dónde estamos: primero los datos, centrados, y debajo el mapa, que ya
+     hace de enlace a Google Maps: el botón «Encuéntranos…» sobra */
+  .lugar-mapa{order:2;margin-inline:auto}
+  .lugar-datos{text-align:center}
+  .lugar-datos p:not([class]){margin-inline:auto}
+  .lugar-datos .btn{display:none}
+  /* las cejillas de los bloques centrados se centran con ellos */
+  .mamas-azules .cejilla,.lugar-datos .cejilla{justify-content:center}
+}
+@media(max-width:560px){
+  /* la misma cejilla con la rayita encima que usan los encabezados centrados */
+  .mamas-azules .cejilla,.lugar-datos .cejilla{flex-direction:column;gap:.55rem}
+}
+/* Aparición al bajar, más marcada en el teléfono: ahí cada pieza del texto
+   entra por separado (ver el script del revelado), y un desplazamiento un
+   poco mayor con frenado suave se lee como movimiento y no como parpadeo.
+   Las fotos y el mapa suman un leve acercamiento. */
+@media(max-width:900px) and (prefers-reduced-motion:no-preference){
+  .rev{transform:translateY(28px);
+    transition:opacity .8s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+  figure.rev,.lugar-mapa.rev{transform:translateY(28px) scale(.96)}
+  .rev.on{transform:none}
+}
+@media(max-width:900px){
+  /* la invitación en dos renglones: la pregunta, y debajo la acción */
+  .invitacion-preg{display:block}
+  /* Mi historia: la firma de Gloria va debajo de su retrato, centrada. El
+     bloque de texto se «disuelve» (`display:contents`) para que la firma
+     sea un renglón más de la grilla y pueda ir después de la foto; el
+     espacio entre filas pasa a los márgenes de cada pieza */
+  .carta .pliego{row-gap:0}
+  .carta .pliego > div{display:contents}
+  .carta .historia-figura{margin-top:clamp(2.6rem,8vw,3.4rem)}
+  .carta .firma-historia{order:3;text-align:center;margin-top:1.6rem}
+  .carta .firma-historia span{margin-inline:auto}
+}
+/* Testimonios: el dedo puede arrastrar el carril (ver script). `pan-y` deja
+   el desplazamiento vertical de la página en manos del navegador y entrega
+   el horizontal al script. No va con movimiento reducido: ahí el carril ya
+   es un scroll nativo y esto le bloquearía el arrastre. */
+@media(prefers-reduced-motion:no-preference){
+  .notas-carril{touch-action:pan-y}
 }
 </style>
 </head>
@@ -1534,7 +1592,7 @@ main :focus-visible{outline-color:var(--nogal-osc)}
           nació esta comunidad: un grupo de amigas con quien compartir nuestros
           momentos difíciles y organizar talleres para aprender, pero que también se
           junta a descansar, reír y desconectar de la rutina.</p>
-        <p class="invitacion">¿Te nos unes por una copita de vino?
+        <p class="invitacion"><span class="invitacion-preg">¿Te nos unes por una copita de vino?</span>
           <a href="https://wa.me/56926122138?text=%C2%A1Hola%21%20Quisiera%20participar%20en%20su%20siguiente%20actividad%20de%20mam%C3%A1s%20azules%20%F0%9F%92%99%2C%20%C2%BFMe%20entregas%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener">Escríbeme</a>
           y súmate a nuestra próxima reunión.</p>
       </div>
@@ -1777,6 +1835,23 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     document.querySelectorAll('.rev').forEach(function(e){e.classList.add('on')});
     return;
   }
+  // En el teléfono (≤900px, una columna) los bloques de texto miden más que la
+  // pantalla: revelados de una pieza, al bajar lo de abajo ya estaba a la vista
+  // y no se notaba ningún movimiento. Ahí cada pieza —cejilla, título, cada
+  // párrafo, la firma— entra por su cuenta a medida que se baja. Las fotos, el
+  // mapa, el carril y el cierre siguen entrando enteros.
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    document.querySelectorAll('.portada-carta .enc, .carta .pliego > div.rev, ' +
+      '.dos-manos .pliego > div.rev, .mamas-azules .col-texto, .testimonios .enc, ' +
+      '.lugar-datos').forEach(function(bloque){
+      bloque.classList.remove('rev');
+      Array.prototype.forEach.call(bloque.children, function(h){
+        // .carta-cuerpo es sólo un envoltorio: entran sus párrafos, uno a uno
+        var piezas = h.classList.contains('carta-cuerpo') ? h.children : [h];
+        Array.prototype.forEach.call(piezas, function(p){ p.classList.add('rev'); });
+      });
+    });
+  }
   var io = new IntersectionObserver(function(entradas){
     entradas.forEach(function(e){
       if (e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
@@ -1833,6 +1908,67 @@ main :focus-visible{outline-color:var(--nogal-osc)}
     if (document.hidden) parar(); else arrancar();
   });
   arrancar();
+})();
+
+(function(){  // testimonios: el carril también se arrastra con el dedo
+  // El desfile sigue siendo la animación CSS (suave y sin gastar script). Al
+  // apoyar el dedo se lee dónde va, se congela ahí y el dedo lo mueve; al
+  // soltar sigue de largo un momento (inercia) y la animación se retoma desde
+  // ese punto con un retraso negativo, que es su fase: no hay salto.
+  var carril = document.querySelector('.notas-carril');
+  var pista = carril && carril.querySelector('.notas-pista');
+  if (!pista || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var duracion = parseFloat(getComputedStyle(pista).animationDuration) || 64;
+  var arrastre = null, inercia = 0;
+  // la animación corre media pista (el segundo grupo es la copia del primero)
+  function mitad(){ return pista.offsetWidth / 2; }
+  // cualquier desplazamiento vuelve al tramo [-mitad, 0): el bucle no tiene bordes
+  function ajustar(x){ var d = mitad(); x = x % d; return x > 0 ? x - d : x; }
+  function leerX(){ return new DOMMatrixReadOnly(getComputedStyle(pista).transform).m41; }
+  function fijar(x){ pista.style.transform = 'translateX(' + x + 'px)'; }
+  function retomar(x){
+    pista.style.animation = '';
+    pista.style.transform = '';
+    pista.style.animationDelay = (x / mitad() * duracion) + 's';
+  }
+  carril.addEventListener('pointerdown', function(e){
+    if (e.pointerType === 'mouse') return;   // con mouse ya está la pausa al pasar
+    cancelAnimationFrame(inercia);
+    var x = leerX();                         // antes de congelar la animación
+    pista.style.animation = 'none';
+    fijar(x);
+    arrastre = {id:e.pointerId, x0:x, x:x, ini:e.clientX, ult:e.clientX, t:e.timeStamp, v:0};
+  });
+  carril.addEventListener('pointermove', function(e){
+    if (!arrastre || e.pointerId !== arrastre.id) return;
+    var dt = e.timeStamp - arrastre.t;
+    if (dt > 0) arrastre.v = .8 * (e.clientX - arrastre.ult) / dt + .2 * arrastre.v;
+    arrastre.ult = e.clientX;
+    arrastre.t = e.timeStamp;
+    arrastre.x = ajustar(arrastre.x0 + e.clientX - arrastre.ini);
+    fijar(arrastre.x);
+  });
+  function soltar(e){
+    if (!arrastre || e.pointerId !== arrastre.id) return;
+    var x = arrastre.x;
+    // si el dedo se quedó quieto antes de levantarse, no hay impulso
+    var v = e.timeStamp - arrastre.t > 90 ? 0 : arrastre.v;
+    arrastre = null;
+    var antes = performance.now();
+    (function paso(ahora){
+      var dt = Math.min(ahora - antes, 32);
+      antes = ahora;
+      x = ajustar(x + v * dt);
+      v *= Math.pow(.94, dt / 16);           // frena parejo a cualquier frecuencia
+      fijar(x);
+      if (Math.abs(v) > .02) inercia = requestAnimationFrame(paso);
+      else retomar(x);
+    })(antes);
+  }
+  // pointercancel llega cuando el gesto resultó vertical y el navegador se
+  // quedó con él para desplazar la página: el carril sigue desde donde estaba
+  carril.addEventListener('pointerup', soltar);
+  carril.addEventListener('pointercancel', soltar);
 })();
 
 (function(){  // volver arriba: visible pasada la primera pantalla

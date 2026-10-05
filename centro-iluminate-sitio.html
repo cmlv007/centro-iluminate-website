@@ -1193,6 +1193,157 @@ a.serv{display:block}
   main h1 br,main h2 br{display:none}
   main h1,main h2{text-wrap:balance}
 }
+
+/* ══ RESPONSIVE DE LA PORTADA (≤820px, donde aparece la hamburguesa) ══
+   Tanda del 05-10-2026. Sólo cambia el teléfono y la tablet vertical: el
+   escritorio queda exactamente como estaba. Los bloques que existen sólo en
+   el teléfono viven en el marcado y se ocultan por encima de 820px. */
+.respaldo-cajas,.respaldo-carril,.tm,.test-acordeon,.test-mas,.conv-puntos,.mas-movil{display:none}
+@keyframes respaldo-corre{to{transform:translateX(-50%)}}
+@media(max-width:820px){
+  /* ── tira: sin flechas, relevo más rápido (ver script) y el mensaje de
+     WhatsApp sin «nuestro» ── */
+  .tira-ctrl,.tira-nuestro{display:none}
+
+  /* ── portada ──
+     --alto-cab es el alto REAL de la cabecera: tira + fila del logotipo
+     (padding .7rem×2, 1px de borde y el svg, cuyo alto sale de sus atributos
+     140×22 y no del viewBox). Medido: 113px a 360, 117 a 390, 124 a 430 y 108
+     entre 561 y 820. La foto arranca justo ahí; antes empezaba a 9,5rem y
+     entre la cabecera y la foto quedaba una franja de velo oscuro vacía.
+     --alto-foto: 1,35 veces el ancho, con tope en lo que queda de pantalla.
+     Con una proporción fija, todos los teléfonos encuadran la misma escena. */
+  .hero{--alto-cab:calc(2.2rem + 1.4rem + 1px + min(317px,100vw - 8rem)*.157143);
+    --alto-foto:min(135vw,100svh - var(--alto-cab));
+    min-height:calc(var(--alto-cab) + var(--alto-foto));
+    display:flex;flex-direction:column;justify-content:center;
+    /* el colchón de abajo sube el bloque un poco sobre el centro, para que el
+       botón quede por encima de las caras de los niños y no encima de ellas */
+    padding:var(--alto-cab) 0 calc(var(--alto-foto)*.14)}
+  /* foto a lo alto (cover), anclada abajo y centrada en los niños. Se prolonga
+     un 3% bajo el borde para que el piso de goma quede fuera y los niños se
+     apoyen justo en el filo inferior de la portada */
+  .hero-foto{top:var(--alto-cab);bottom:calc(var(--alto-foto)*-.03);
+    background-size:cover;background-position:52% 100%}
+  /* el velo empieza con la foto: denso donde va el titular, casi nada abajo */
+  .hero-halo{top:var(--alto-cab);
+    background:linear-gradient(to bottom,rgba(48,31,22,.72) 0%,rgba(48,31,22,.64) 38%,
+      rgba(48,31,22,.3) 62%,rgba(48,31,22,.06) 100%)}
+  .hero h1{font-size:clamp(1.7rem,7.4vw,2.3rem);margin-bottom:1rem}
+  .hero-cta{padding:.7rem 1.25rem;font-size:.86rem}
+  .hero-cta svg{width:14px;height:14px}
+
+  /* ── respaldo: cuatro cajas con ícono en vez del mosaico, y el carril ── */
+  .mosaico{display:none}
+  .respaldo-cajas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;
+    list-style:none;margin:0;padding:0}
+  .respaldo-cajas li{display:flex;flex-direction:column;align-items:center;gap:.75rem;
+    text-align:center;background:var(--tarjeta);border:1px solid var(--duna);
+    border-radius:18px;padding:1.2rem .85rem 1.1rem;
+    font-size:.86rem;font-weight:600;line-height:1.35;color:var(--titulo)}
+  /* el mismo cuadro de ícono que las tarjetas de «Lo que viene después» */
+  .respaldo-ico{flex:none;width:46px;height:46px;border-radius:14px;display:grid;
+    place-items:center;background:rgba(251,201,140,.3);color:var(--titulo)}
+  .respaldo-carril{display:block;overflow:hidden;margin-top:clamp(1.8rem,5vw,2.6rem)}
+  /* margin-right y no gap: así la mitad de la pista mide justo un ciclo
+     (cuatro fotos + cuatro separaciones) y el -50% cierra sin salto */
+  .respaldo-pista{display:flex;width:max-content;animation:respaldo-corre 26s linear infinite}
+  .respaldo-pista img{flex:none;width:clamp(10.5rem,44vw,14rem);aspect-ratio:4/5;height:auto;
+    object-fit:cover;border-radius:18px;margin-right:.85rem;background:var(--duna)}
+
+  /* ── por qué existimos: sin el niño, y sin la reserva de 11-13rem que le
+     dejaba sitio al pie de la sección ── */
+  .nino-deco{display:none}
+  #nosotros{padding-bottom:clamp(4.5rem,9vw,7.5rem)}
+
+  /* ── nuestra forma de trabajar: primero la ilustración, después el texto,
+     centrado ── */
+  #terapias .enc-fig{order:-1}
+  #terapias .enc-dual{text-align:center}
+  #terapias .cejilla{justify-content:center}
+  #terapias .bajada{margin-inline:auto}
+  /* el botón entra en un renglón: letra más chica, dos caras y «+7» (9 en total) */
+  #terapias .enc-cta{white-space:nowrap;font-size:.84rem;padding:.78rem 1.15rem;gap:.5rem}
+  .btn-caras img,.btn-caras-mas{width:28px;height:28px}
+  .btn-caras>*+*{margin-left:-10px}
+  .btn-caras img:nth-child(3),.mas-escritorio{display:none}
+  .mas-movil{display:inline}
+
+  /* ── nuestras terapias: tarjetas que se deslizan de a una ── */
+  .carril-zona{display:none}
+  .tm{display:block}
+  /* --alto-foto también ubica las flechas: van a media altura de la foto */
+  .tm-visor{position:relative;max-width:27rem;margin-inline:auto;
+    --alto-foto:clamp(200px,60vw,290px)}
+  .tm-pista{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;
+    overscroll-behavior-x:contain;scrollbar-width:none;border-radius:22px}
+  .tm-pista::-webkit-scrollbar{display:none}
+  .tm-card{flex:0 0 100%;scroll-snap-align:start;display:flex;flex-direction:column;
+    background:var(--tarjeta);border:1px solid var(--duna);border-radius:22px;overflow:hidden}
+  .tm-foto{flex:none;height:var(--alto-foto);background:var(--duna)}
+  .tm-foto img{width:100%;height:100%;object-fit:cover}
+  /* encuadre de cada foto (son verticales y aquí se recortan a lo ancho) */
+  .tm-card:nth-child(1) .tm-foto img{object-position:50% 72%}
+  .tm-card:nth-child(2) .tm-foto img{object-position:50% 88%}
+  .tm-card:nth-child(3) .tm-foto img{object-position:50% 38%}
+  .tm-card:nth-child(4) .tm-foto img{object-position:50% 48%}
+  .tm-card:nth-child(5) .tm-foto img{object-position:50% 62%}
+  .tm-cuerpo{flex:1;display:flex;flex-direction:column;padding:1.25rem 1.3rem 1.4rem}
+  .tm-card h3{font-size:1.55rem;margin-bottom:.55rem}
+  .tm-card p{font-size:.86rem;line-height:1.6;color:var(--desc);margin:0 0 1.2rem}
+  /* «terapeuta disponible» siempre al pie, aunque la descripción sea corta */
+  .tm-card .disponible{margin-top:auto}
+  .tm-flecha{position:absolute;z-index:2;top:calc(var(--alto-foto)/2);transform:translateY(-50%);
+    box-shadow:0 8px 20px -8px rgba(74,53,33,.35)}
+  .tm-flecha:hover{transform:translateY(-50%) scale(1.08)}
+  .tm-ant{left:-.7rem}
+  .tm-sig{right:-.7rem}
+
+  /* ── diagnóstico: acordeón, todos cerrados al cargar y uno abierto a la vez ── */
+  .test-caja{display:none}
+  .test-acordeon{display:grid;gap:.75rem}
+  .test-ac{background:var(--tarjeta);border:1px solid var(--duna);border-radius:16px;
+    transition:border-color .3s ease,box-shadow .3s ease}
+  .test-ac[open]{border-color:var(--boton);box-shadow:0 14px 30px -18px rgba(74,53,33,.35)}
+  .test-ac summary{display:flex;align-items:center;gap:.8rem;padding:1.05rem 1.15rem;
+    list-style:none;cursor:pointer;border-radius:16px;
+    font-weight:600;font-size:.97rem;line-height:1.3;color:var(--titulo)}
+  .test-ac summary::-webkit-details-marker{display:none}
+  /* título e insignia juntos; si no caben, la insignia baja de renglón */
+  .test-ac-tit{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .6rem}
+  .test-ac .test-badge{margin-left:0;font-size:.6rem;padding:.28rem .62rem}
+  .test-ac-flecha{flex:none;opacity:.6;transition:transform .3s ease,opacity .3s ease}
+  .test-ac[open] .test-ac-flecha{transform:rotate(180deg);opacity:1}
+  .test-ac-cuerpo{padding:0 1.15rem 1.2rem}
+  .test-ac-cuerpo p{margin:0;font-size:.9rem;line-height:1.7;color:var(--desc)}
+  .test-ac[open] .test-ac-cuerpo{animation:aparece .45s cubic-bezier(.22,1,.36,1) both}
+  .test-mas{display:flex;justify-content:center;margin-top:clamp(1.8rem,5vw,2.4rem)}
+
+  /* ── convenios: carril que avanza solo (ver script), una tarjeta a la vez ── */
+  .convenios{display:flex;gap:1rem;max-width:22rem;overflow-x:auto;
+    scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
+  .convenios::-webkit-scrollbar{display:none}
+  .convenios .convcard{flex:0 0 100%;scroll-snap-align:start}
+  /* dentro del carril la tarjeta no sube al tocarla: se cortaría por arriba */
+  .convenios .convcard:hover{transform:none;box-shadow:none}
+  .conv-puntos{display:flex;justify-content:center;gap:.2rem;margin-top:1.2rem}
+  /* el botón es más grande que el punto que se ve: blanco cómodo para el dedo */
+  .conv-punto{min-width:22px;height:22px;padding:0 2px;border:0;background:none;
+    cursor:pointer;display:grid;place-items:center}
+  .conv-punto::before{content:"";width:9px;height:9px;border-radius:99px;background:var(--duna);
+    transition:width .35s ease,background .35s ease}
+  .conv-punto[aria-current="true"]::before{width:24px;background:var(--miel)}
+
+  /* ── banner Walty: título y descripción centrados ── */
+  .walty-txt{text-align:center}
+  .walty-txt .bajada{margin-inline:auto}
+}
+@media(max-width:560px){
+  /* en el teléfono la tira lleva dos renglones (3,3rem en vez de 2,2rem) */
+  .hero{--alto-cab:calc(3.3rem + 1.4rem + 1px + min(317px,100vw - 8rem)*.157143)}
+  /* la misma cejilla con la rayita encima que usan los encabezados centrados */
+  #terapias .cejilla{flex-direction:column;gap:.55rem}
+}
 </style>
 </head>
 <body>
@@ -1212,7 +1363,7 @@ a.serv{display:block}
       </div>
       <div class="tira-visor">
         <span class="tira-msj activo">Av. Las Condes 10.415, of. 9<span class="tira-bar" aria-hidden="true">|</span><a href="https://maps.app.goo.gl/WpADnpBBgt54YKXN7" target="_blank" rel="noopener">Encuéntranos en Google Maps <span aria-hidden="true">&#8594;</span></a></span>
-        <span class="tira-msj">Consulta y Reserva por nuestro WhatsApp <a href="https://wa.me/56926122138">+56 9 2612 2138</a></span>
+        <span class="tira-msj"><span>Consulta y Reserva por <span class="tira-nuestro">nuestro </span>WhatsApp</span> <a href="https://wa.me/56926122138">+56 9 2612 2138</a></span>
       </div>
       <p class="tira-horario">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
@@ -1350,6 +1501,30 @@ a.serv{display:block}
       </div>
 
     </div>
+
+    <!-- en el teléfono (≤820px) el mosaico se oculta: en su lugar van estas cuatro
+         cajas y, debajo, un carril con las mismas cuatro fotos que corre solo -->
+    <ul class="respaldo-cajas rev">
+      <li><span class="respaldo-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5v-8"/><path d="M12 12.5C12 9 9.6 6.5 5.5 6.5c0 3.5 2.4 6 6.5 6z"/><path d="M12 10.5c0-3.4 2.4-6 6.5-6 0 3.5-2.4 6-6.5 6z"/></svg></span>Terapias complementarias</li>
+      <li><span class="respaldo-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="m8.6 13.4-1.6 7.1 5-2.6 5 2.6-1.6-7.1"/><path d="m9.8 9 1.5 1.5 2.9-2.9"/></svg></span>+20 años de experiencia clínica</li>
+      <li><span class="respaldo-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12.5" rx="2"/><path d="M8.5 20.5h7"/><path d="M12 16.5v4"/><circle cx="12" cy="8.6" r="2"/><path d="M8.7 13.6c.7-1.3 1.9-2 3.3-2s2.6.7 3.3 2"/></svg></span>Atención Online y Presencial</li>
+      <li><span class="respaldo-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 4l8.5 6.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z"/><path d="M12 17.2s-3-1.8-3-3.9c0-1 .8-1.8 1.7-1.8.6 0 1 .3 1.3.8.3-.5.7-.8 1.3-.8.9 0 1.7.8 1.7 1.8 0 2.1-3 3.9-3 3.9z"/></svg></span>Espacios adaptados a necesidades sensoriales</li>
+    </ul>
+  </div>
+
+  <!-- fuera del .env para que corra de borde a borde; la segunda tanda de fotos
+       es la copia que cierra el bucle sin salto -->
+  <div class="respaldo-carril rev">
+    <div class="respaldo-pista">
+      <img src="img/mos-gimnasio.webp" alt="Gimnasio sensorial al aire libre del centro, con colchonetas de colores y módulos de espuma" decoding="async">
+      <img src="img/mos-terapia.webp" alt="Terapeuta ocupacional trabajando con un niño sobre un columpio nido en el patio sensorial" decoding="async">
+      <img src="img/mos-odontologia.webp" alt="Profesional del centro acompañando a un niño sentado en un columpio nido" decoding="async">
+      <img src="img/mos-piscina.webp" alt="Niña jugando dentro de la piscina de pelotas del centro" decoding="async">
+      <img src="img/mos-gimnasio.webp" alt="" aria-hidden="true" decoding="async">
+      <img src="img/mos-terapia.webp" alt="" aria-hidden="true" decoding="async">
+      <img src="img/mos-odontologia.webp" alt="" aria-hidden="true" decoding="async">
+      <img src="img/mos-piscina.webp" alt="" aria-hidden="true" decoding="async">
+    </div>
   </div>
 </section>
 
@@ -1393,7 +1568,7 @@ a.serv{display:block}
             <img src="img/terapeutas/catalina-vargas.webp" alt="" width="763" height="801" loading="lazy" decoding="async">
             <img src="img/terapeutas/emilia-middleton.webp" alt="" width="763" height="801" loading="lazy" decoding="async">
             <img src="img/terapeutas/pascuala-vergara.webp" alt="" width="763" height="801" loading="lazy" decoding="async">
-            <span class="btn-caras-mas">+6</span>
+            <span class="btn-caras-mas"><span class="mas-escritorio">+6</span><span class="mas-movil">+7</span></span>
           </span>
           Conoce al equipo terapéutico
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1470,6 +1645,29 @@ a.serv{display:block}
         <span class="carril-rot">Odonto&shy;pediatría adaptada</span>
       </button>
     </div>
+    </div>
+
+    <!-- en el teléfono (≤820px) el carril se oculta y en su lugar va esto: una
+         tarjeta por terapia —foto, nombre, descripción y quién atiende— que se
+         desliza de a una. Las tarjetas las arma el script del carril con sus
+         mismos datos, así cada terapia se edita en un solo lugar. -->
+    <div class="tm">
+      <div class="enc centro rev">
+        <h2 class="h-l">Nuestras terapias</h2>
+      </div>
+      <div class="tm-visor rev">
+        <div class="tm-pista" id="tm-pista" tabindex="0" aria-label="Nuestras terapias"></div>
+        <button class="carril-flecha tm-flecha tm-ant" type="button" data-dir="-1" aria-label="Terapia anterior">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true"><path d="M19 12H5"/><path d="M12 5 5 12l7 7"/></svg>
+        </button>
+        <button class="carril-flecha tm-flecha tm-sig" type="button" data-dir="1" aria-label="Terapia siguiente">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -1633,6 +1831,17 @@ a.serv{display:block}
         </div>
       </div>
     </div>
+
+    <!-- en el teléfono (≤820px) las pestañas pasan a acordeón: lo arma el script
+         de los tests a partir de los paneles de arriba (sin IVADEC) -->
+    <div class="test-acordeon rev" id="test-acordeon"></div>
+    <div class="test-mas rev">
+      <a class="btn btn-p" href="servicios.html#evaluaciones">Ver más Test
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          aria-hidden="true"><path d="M5 12h13"/><path d="M12 5.5 18.5 12 12 18.5"/></svg>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -1771,6 +1980,8 @@ a.serv{display:block}
         </button>
       </article>
     </div>
+    <!-- puntos del carril de convenios en el teléfono: los crea el script -->
+    <div class="conv-puntos" id="conv-puntos" aria-label="Convenios"></div>
     <p class="conv-nota rev">Para activar tu beneficio, sólo menciona tu institución al reservar.<br>
       ¿Representas a una organización y te gustaría sumar un convenio?
       <a href="https://wa.me/56926122138?text=Hola%2C%20me%20interesa%20conversar%20sobre%20un%20convenio%20institucional">Conversemos</a></p>
@@ -2032,6 +2243,46 @@ a.serv{display:block}
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var txtReloj = null, crecerReloj = null;
 
+  // ── en el teléfono (≤820px) el carril se oculta y en su lugar van tarjetas
+  // que se deslizan de a una (.tm en el CSS). Se arman con los MISMOS datos:
+  // nombre, descripción y quién atiende salen del arreglo de arriba, y la foto
+  // de cada .carril-card. Así cada terapia se edita en un solo lugar.
+  var pista = document.getElementById('tm-pista');
+  if (pista) {
+    terapias.forEach(function(ter, i){
+      var card = document.createElement('article');
+      card.className = 'tm-card';
+      var foto = document.createElement('div');
+      foto.className = 'tm-foto';
+      var img = tarjetas[i].querySelector('img').cloneNode(false);
+      img.removeAttribute('style');            // el encuadre lo da el CSS de .tm-card
+      foto.appendChild(img);
+      var cuerpo = document.createElement('div');
+      cuerpo.className = 'tm-cuerpo';
+      // sin loading="lazy": dentro de un carril horizontal las caras de las
+      // tarjetas de la derecha podrían quedarse sin cargar hasta asomar
+      cuerpo.innerHTML = '<h3></h3><p></p><div class="disponible">' +
+        ter.disp.replace(/ loading="lazy"/g, '') + '</div>';
+      cuerpo.querySelector('h3').textContent = ter.nombre;
+      cuerpo.querySelector('p').textContent = ter.desc;
+      card.appendChild(foto);
+      card.appendChild(cuerpo);
+      pista.appendChild(card);
+    });
+    var tmCards = pista.children;
+    // distancia de una tarjeta a la siguiente: su ancho más la separación
+    var tmPaso = function(){ return tmCards[1].offsetLeft - tmCards[0].offsetLeft; };
+    document.querySelectorAll('.tm-flecha').forEach(function(b){
+      b.addEventListener('click', function(){
+        var cuantas = tmCards.length;
+        var i = Math.round(pista.scrollLeft / tmPaso());
+        // en los extremos da la vuelta, como el carril de escritorio
+        i = (i + parseInt(b.getAttribute('data-dir'), 10) + cuantas) % cuantas;
+        pista.scrollTo({left: i * tmPaso(), behavior: reduce ? 'auto' : 'smooth'});
+      });
+    });
+  }
+
   function ponerTexto(){
     nombre.textContent = terapias[activa].nombre;
     desc.textContent   = terapias[activa].desc;
@@ -2118,7 +2369,7 @@ a.serv{display:block}
     var t = e.target.closest('.carril-card');
     if (t) { activa = tarjetas.indexOf(t); pintar(true); reiniciar(); }
   });
-  document.querySelectorAll('.carril-flecha').forEach(function(b){
+  document.querySelectorAll('.carril-flechas .carril-flecha').forEach(function(b){
     b.addEventListener('click', function(){
       ir(parseInt(b.getAttribute('data-dir'),10));
       reiniciar();
@@ -2189,6 +2440,45 @@ a.serv{display:block}
     if (document.hidden) parar(); else arrancar();
   });
 
+  // ── en el teléfono (≤820px): acordeón (.test-acordeon en el CSS) ──
+  // Una caja por botón, salvo IVADEC. Dentro va sólo la descripción del panel
+  // (su párrafo, sin la pregunta ni los botones) y la insignia sube junto al
+  // título. El `name` común hace que abrir uno cierre los demás; el escucha de
+  // abajo hace lo mismo en los navegadores que todavía no lo entienden.
+  var acordeon = document.getElementById('test-acordeon');
+  if (acordeon) {
+    tabs.forEach(function(tab){
+      if (tab.id === 'tab-ivadec') return;
+      var panel = document.getElementById(tab.getAttribute('aria-controls'));
+      if (!panel) return;
+      var d = document.createElement('details');
+      d.className = 'test-ac';
+      d.setAttribute('name', 'tests-diagnostico');
+      var s = document.createElement('summary');
+      var tit = document.createElement('span');
+      tit.className = 'test-ac-tit';
+      tit.textContent = tab.textContent.trim();
+      var insignia = panel.querySelector('.test-badge');
+      if (insignia) tit.appendChild(insignia.cloneNode(true));
+      s.appendChild(tit);
+      s.insertAdjacentHTML('beforeend', '<svg class="test-ac-flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>');
+      var cuerpo = document.createElement('div');
+      cuerpo.className = 'test-ac-cuerpo';
+      var parrafos = panel.querySelectorAll(':scope > p:not(.test-sub)');
+      if (parrafos.length) cuerpo.appendChild(parrafos[parrafos.length - 1].cloneNode(true));
+      d.appendChild(s);
+      d.appendChild(cuerpo);
+      acordeon.appendChild(d);
+    });
+    // `toggle` no burbujea: se escucha en fase de captura
+    acordeon.addEventListener('toggle', function(e){
+      if (!e.target.open) return;
+      acordeon.querySelectorAll('details[open]').forEach(function(o){
+        if (o !== e.target) o.open = false;
+      });
+    }, true);
+  }
+
   arrancar();
 })();
 (function(){  // ventana con los colegios adheridos
@@ -2204,6 +2494,62 @@ a.serv{display:block}
   modal.addEventListener('click', function(e){   // clic fuera de la caja cierra
     if (e.target === modal) modal.close();
   });
+})();
+(function(){  // convenios en el teléfono: carril que avanza solo, con puntos
+  var lista = document.querySelector('.convenios');
+  var puntos = document.getElementById('conv-puntos');
+  if (!lista || !puntos) return;
+  var cards = lista.querySelectorAll('.convcard');
+  if (cards.length < 2) return;
+  var movil = window.matchMedia('(max-width: 820px)');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reloj = null, retomar = null, visible = false, pendiente = false;
+
+  Array.prototype.forEach.call(cards, function(c, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'conv-punto';
+    b.setAttribute('aria-label', 'Ver convenio ' + (i + 1) + ' de ' + cards.length);
+    b.addEventListener('click', function(){ ir(i); pausa(); });
+    puntos.appendChild(b);
+  });
+  var bots = puntos.children;
+
+  // distancia de una tarjeta a la siguiente: su ancho más la separación
+  function paso(){ return cards[1].offsetLeft - cards[0].offsetLeft; }
+  function actual(){ return Math.round(lista.scrollLeft / paso()); }
+  function marcar(){
+    var i = actual();
+    Array.prototype.forEach.call(bots, function(b, k){
+      b.setAttribute('aria-current', k === i ? 'true' : 'false');
+    });
+  }
+  function ir(i){ lista.scrollTo({left: i * paso(), behavior: reduce ? 'auto' : 'smooth'}); }
+  function arrancar(){
+    if (!reloj && !reduce && movil.matches && visible && !document.hidden)
+      reloj = setInterval(function(){ ir((actual() + 1) % cards.length); }, 4500);
+  }
+  function parar(){ if (reloj) { clearInterval(reloj); reloj = null; } }
+  // al tocar o arrastrar, el avance automático se aparta y vuelve a los 6s
+  function pausa(){ parar(); clearTimeout(retomar); retomar = setTimeout(arrancar, 6000); }
+
+  lista.addEventListener('scroll', function(){
+    if (!pendiente) { pendiente = true; requestAnimationFrame(function(){ pendiente = false; marcar(); }); }
+  }, {passive:true});
+  lista.addEventListener('pointerdown', pausa);
+  lista.addEventListener('touchstart', pausa, {passive:true});
+  // sólo corre mientras se ve: fuera de pantalla no gasta ni mueve nada
+  new IntersectionObserver(function(es){
+    visible = es[0].isIntersecting;
+    if (visible) arrancar(); else parar();
+  }, {threshold:.4}).observe(lista);
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) parar(); else arrancar();
+  });
+  if (movil.addEventListener) movil.addEventListener('change', function(){
+    parar(); lista.scrollLeft = 0; marcar(); arrancar();
+  });
+  marcar();
 })();
 (function(){  // cabecera transparente sobre la portada, sólida al bajar
   var zona = document.getElementById('cabecera');
@@ -2259,7 +2605,11 @@ a.serv{display:block}
     }
     entra.classList.add('activo');
   }
-  function arrancar(){ if (!reloj && !reduce) reloj = setInterval(pasar, 5200); }
+  // en el teléfono (≤820px) el relevo es más rápido: allí no hay flechas
+  var movil = window.matchMedia('(max-width: 820px)');
+  function arrancar(){
+    if (!reloj && !reduce) reloj = setInterval(pasar, movil.matches ? 3000 : 5200);
+  }
   function parar(){ if (reloj) { clearInterval(reloj); reloj = null; } }
   Array.prototype.forEach.call(tira.querySelectorAll('.tira-flecha'), function(b){
     b.addEventListener('click', function(){
@@ -2275,6 +2625,10 @@ a.serv{display:block}
   tira.addEventListener('focusout', arrancar);
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) parar(); else arrancar();
+  });
+  // al cruzar el corte (girar el teléfono, achicar la ventana) se ajusta el ritmo
+  if (movil.addEventListener) movil.addEventListener('change', function(){
+    if (reloj) { parar(); arrancar(); }
   });
   arrancar();
 })();

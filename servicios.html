@@ -1371,6 +1371,32 @@ main section[id]{scroll-margin-top:5rem}
   main h1 br,main h2 br{display:none}
   main h1,main h2{text-wrap:balance}
 }
+
+/* ══ RESPONSIVE DE SERVICIOS (≤820px) ══
+   Tanda del 05-10-2026; el escritorio no cambia. */
+@keyframes rect-respira{
+  0%{border-radius:28px 54px 34px 62px / 40px 30px 58px 34px}
+  100%{border-radius:52px 30px 60px 32px / 30px 50px 34px 56px}
+}
+@media(max-width:820px){
+  /* Terapias profesionales: los botones sin el punto de luz (y sin el hueco
+     que le guardaban a la izquierda) */
+  .terapia-tab::before{display:none}
+  .terapia-tab,.terapia-tab.activa{padding-left:1.1rem}
+  /* la foto ocupa todo el ancho de la tarjeta, como un rectángulo de esquinas
+     desparejas que respira igual que la mancha de escritorio; la sombra del
+     tinte lo sigue, apenas corrida y girada */
+  .tp-figura{justify-self:stretch;width:100%;aspect-ratio:4/3}
+  .tp-figura::before{animation-name:rect-respira;transform:translate(2.5%,4%) rotate(-1.5deg)}
+  .tp-foto{animation-name:rect-respira}
+  /* Talleres de autocuidado sobre beige claro */
+  .apoyo-talleres{background:var(--beige-claro)}
+}
+/* el carril de nombres (≤760px) también se arrastra con el mouse */
+@media(max-width:760px){
+  .terapias-lista{cursor:grab}
+  .terapias-lista.arrastrando{cursor:grabbing;user-select:none}
+}
 </style>
 </head>
 <body>
@@ -1889,7 +1915,7 @@ main section[id]{scroll-margin-top:5rem}
     </article>
 
     <!-- 2 · talleres -->
-    <article class="apoyo rev">
+    <article class="apoyo apoyo-talleres rev">
       <div class="apoyo-figura">
         <img class="apoyo-foto" src="img/talleres-autocuidado.webp" width="1600" height="1143"
           loading="lazy" decoding="async" style="--foco:50% 20%"
@@ -2306,6 +2332,32 @@ main section[id]{scroll-margin-top:5rem}
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) parar(); else arrancar();
   });
+  // En el carril horizontal (≤760px) el dedo ya desliza la fila; aquí se suma
+  // el arrastre con el mouse. Si hubo arrastre, el clic con que termina no
+  // cambia de pestaña.
+  var arr = null, recienArrastrado = false;
+  lista.addEventListener('pointerdown', function(e){
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    if (lista.scrollWidth <= lista.clientWidth + 1) return;   // no es carril
+    arr = {x:e.clientX, sl:lista.scrollLeft, movio:false};
+  });
+  window.addEventListener('pointermove', function(e){
+    if (!arr) return;
+    var dx = e.clientX - arr.x;
+    if (!arr.movio && Math.abs(dx) > 5){ arr.movio = true; lista.classList.add('arrastrando'); }
+    if (arr.movio){ lista.scrollLeft = arr.sl - dx; e.preventDefault(); }
+  });
+  window.addEventListener('pointerup', function(){
+    if (!arr) return;
+    recienArrastrado = arr.movio;
+    arr = null;
+    lista.classList.remove('arrastrando');
+    setTimeout(function(){ recienArrastrado = false; }, 0);
+  });
+  lista.addEventListener('click', function(e){
+    if (recienArrastrado){ e.stopPropagation(); e.preventDefault(); }
+  }, true);
+
   if ('IntersectionObserver' in window){
     new IntersectionObserver(function(entradas){
       entradas.forEach(function(e){ visible = e.isIntersecting; if (visible) arrancar(); else parar(); });

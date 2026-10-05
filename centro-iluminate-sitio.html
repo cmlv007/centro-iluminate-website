@@ -1219,7 +1219,7 @@ a.serv{display:block}
     display:flex;flex-direction:column;justify-content:center;
     /* el colchón de abajo sube el bloque un poco sobre el centro, para que el
        botón quede por encima de las caras de los niños y no encima de ellas */
-    padding:var(--alto-cab) 0 calc(var(--alto-foto)*.26)}
+    padding:var(--alto-cab) 0 calc(var(--alto-foto)*.36)}
   /* foto a lo alto (cover), anclada abajo y centrada en los niños. Se prolonga
      un 3% bajo el borde para que el piso de goma quede fuera y los niños se
      apoyen justo en el filo inferior de la portada */
@@ -1311,7 +1311,7 @@ a.serv{display:block}
   .test-ac summary::-webkit-details-marker{display:none}
   /* título e insignia juntos; si no caben, la insignia baja de renglón */
   .test-ac-tit{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .6rem}
-  .test-ac .test-badge{margin-left:0;font-size:.6rem;padding:.28rem .62rem}
+  .test-ac .test-badge{margin-left:0;font-size:.52rem;letter-spacing:.1em;padding:.24rem .52rem}
   .test-ac-flecha{flex:none;opacity:.6;transition:transform .3s ease,opacity .3s ease}
   .test-ac[open] .test-ac-flecha{transform:rotate(180deg);opacity:1}
   .test-ac-cuerpo{padding:0 1.15rem 1.2rem}
@@ -1363,6 +1363,18 @@ a.serv{display:block}
   /* nuestras terapias: botón a servicios bajo las tarjetas, en un renglón */
   .tm-mas{display:flex;justify-content:center;margin-top:clamp(1.8rem,5vw,2.4rem)}
   .tm-mas .btn{white-space:nowrap}
+  /* «Lo que viene después»: sin la caja «Evaluaciones», que en el teléfono
+     repite lo que la sección de diagnóstico ya muestra justo arriba */
+  /* con .tambien delante: `a.serv{display:block}` (clase + etiqueta) le ganaba */
+  .tambien .serv-evaluaciones{display:none}
+  /* menú desplegado de borde a borde de la pantalla: el .env de la fila del
+     menú se queda sin canaletas y la lista ya no se encoge al ancho de sus
+     palabras. Los textos se alinean con el margen del logotipo (1,25rem) */
+  .cab-menu .env{width:100%}
+  .cab-menu nav{width:100%}
+  .enlaces{border-radius:0;box-shadow:0 26px 40px -24px rgba(74,53,33,.45)}
+  /* mismo alto de renglón que el menú de las páginas interiores */
+  .enlaces a{padding:.95rem 1.25rem;line-height:1.75}
   /* convenios: las copias que cierran el bucle (ver script) */
   .convenios .convcard-clon{display:block}
 }
@@ -1885,7 +1897,7 @@ a.serv{display:block}
         con todo eso que nadie te explica y que hay que resolver.</p>
     </div>
     <div class="tambien">
-      <a class="serv rev" href="#diagnostico">
+      <a class="serv serv-evaluaciones rev" href="#diagnostico">
         <div class="serv-top"><span class="serv-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2.5A1.5 1.5 0 0 1 19 7v12a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V7a1.5 1.5 0 0 1 1.5-1.5H9"/><path d="M8.5 12.5l2 2 4-4"/></svg></span><h4>Evaluaciones</h4></div>
         <p>ADOS-2, ABLLS-R e IVADEC, con informes emitidos por profesionales certificados.</p>
       </a>
@@ -2255,7 +2267,7 @@ a.serv{display:block}
      disp:'<span class="disponible-caras"><img src="img/terapeutas/anita-reyes.webp" alt="" width="763" height="801" loading="lazy" decoding="async"></span><span class="disponible-txt"><small>Terapeuta disponible:</small><b>Anita Reyes</b></span>'},
     {nombre:'Psicología infanto-juvenil',
      desc:'Espacio de acompañamiento emocional, autorregulación y desarrollo de habilidades sociales para niños y adolescentes neurodivergentes. Apoyamos a las familias en la crianza, los procesos educativos (Homeschooling, adaptaciones) y con evaluaciones para MINEDUC/MINSAL.',
-     disp:'<span class="disponible-caras"><img src="img/terapeutas/denise-sznaider.webp" alt="" width="763" height="801" loading="lazy" decoding="async"><span class="disponible-ini" aria-hidden="true">CV</span></span><span class="disponible-txt"><b>2 terapeutas disponibles</b></span>'},
+     disp:'<span class="disponible-caras"><img src="img/terapeutas/denise-sznaider.webp" alt="" width="763" height="801" loading="lazy" decoding="async"><img src="img/terapeutas/psicologa-carla-vilberos-centro-iluminate-terapias.webp" alt="" width="763" height="801" loading="lazy" decoding="async"></span><span class="disponible-txt"><b>2 terapeutas disponibles</b></span>'},
     {nombre:'Odontopediatría adaptada',
      desc:'Atención dental amable y respetuosa con las necesidades de cada niño. Realizamos evaluaciones, limpiezas y aplicación de flúor en un entorno adaptado (gimnasio sensorial) para prevenir la ansiedad y el estrés.',
      disp:'<span class="disponible-caras"><span class="disponible-ini" aria-hidden="true">JH</span></span><span class="disponible-txt"><small>Terapeuta disponible:</small><b>Javiera Hosiasson</b></span>'}

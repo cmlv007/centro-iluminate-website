@@ -10,11 +10,11 @@
 # brief del centro en PDF, la investigación de competencia y los tableros de
 # inspiración) y `Resources/` (11 MB de fotos originales). Publicar la raíz los
 # dejaría accesibles por URL adivinable. El build arma `dist/` con lo único que
-# el sitio consume de verdad: los cuatro HTML y las 56 imágenes de `img/` (incluye
+# el sitio consume de verdad: los cuatro HTML y las 57 imágenes de `img/` (incluye
 # `img/terapeutas/`, con los retratos de las fichas del equipo).
 #
 # Que ninguna falta está medido: las rutas `img/…` que citan los cuatro HTML y los
-# archivos que hay en `img/` son el MISMO conjunto de 56 (eran 37 hasta que las
+# archivos que hay en `img/` son el MISMO conjunto de 57 (eran 37 hasta que las
 # fichas de `terapeutas.html` estrenaron sus fotos, en `img/terapeutas/`, la
 # portada del equipo sumó `portada-equipo.webp` y `servicios.html` sumó sus dos
 # fondos, `portada-servicios.webp` y `cierre-servicios.webp`, y después tres
@@ -42,6 +42,9 @@
 # (`img/terapeutas/psicologa-carla-vilberos-centro-iluminate-terapias.webp`); salen,
 # sin borrarse de `img/`, la panorámica y el retrato anterior de Gloria y las dos
 # del convenio con el Centro de Padres (`conv-cpadres.webp`, `conv-fondo-cpadres.webp`).
+# El 07-10-2026 pasó a 57: entra `grupo-de-mujeres-brindando2.webp`, la foto de la
+# sección «Juntas mensuales» de `conocenos.html` (duotono marrón-crema del JPG
+# `grupo-de-mujeres-brindando2.jpg`, que queda sin usar en `img/`).
 # Ni un 404, ni una huérfana. El sitio no cita `Resources/` ni `Referencias/` ni una vez.
 #
 # `portada-servicios.webp` cambió de oficio y no de archivo: era el fondo de la

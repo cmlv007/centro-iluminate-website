@@ -583,6 +583,14 @@ main section[id]{scroll-margin-top:5rem}
     rgba(48,32,22,.6) 100%),
     linear-gradient(to bottom,rgba(48,32,22,.5),rgba(38,25,17,.34) 45%,rgba(48,32,22,.58))}
 .cierre-pagina .btn{margin-top:.6rem}
+.cierre-pagina .bajada{text-wrap:balance}
+/* el antetítulo del cierre lleva una raya a cada lado, no sólo al inicio; en el
+   teléfono se queda en un renglón (la regla común de las cejillas centradas la
+   apila en columna, y con dos palabras cortas no hace falta) */
+.cierre-pagina .cejilla::after{content:"";width:26px;height:1.5px;background:var(--boton);flex:none}
+@media(max-width:560px){
+  .cierre-pagina .enc.centro .cejilla{flex-direction:row;gap:.65rem}
+}
 /* ── la barra de la cabecera, con cinco páginas ──
    «Conócenos» suma un ítem a .sticky-enlaces (gap 2.2rem, mayúsculas,
    letter-spacing .09em) dentro de una rejilla 1fr auto 1fr que ya lleva la
@@ -1137,6 +1145,44 @@ main :focus-visible{outline-color:var(--nogal-osc)}
 }
 @keyframes aro-gira{to{transform:rotate(360deg)}}
 
+/* ── 05 bis · Juntas mensuales (id="invitacion") ───────────────────────────
+   Dos mitades exactas: la foto sangra hasta el borde izquierdo y ocupa todo el
+   alto de la sección, y el texto vive en la otra mitad. El relleno derecho del
+   texto es el margen que deja `.env` en pantallas anchas, para que su borde
+   caiga en la misma vertical que el resto de la página. El fondo es el beige
+   claro: la banda de cacao de arriba es la oscura y la de testimonios de abajo
+   es arena, así la curva tonal sigue bajando y subiendo sin repetir fondo.
+   La foto es la de las mamás brindando, pasada a un duotono marrón → crema
+   (hecho al guardar el .webp) para que lea cálida junto al resto del sitio. */
+.juntas{padding:0;background:var(--beige-claro);overflow:hidden}
+.juntas-pliego{display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+.juntas-foto{position:relative;margin:0;min-height:100%}
+.juntas-foto img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:36% 38%}
+.juntas-texto{
+  align-self:center;
+  padding:clamp(4.5rem,9vw,7.5rem) max(1.25rem,calc((100vw - var(--ancho)) / 2)) clamp(4.5rem,9vw,7.5rem) clamp(2.5rem,6vw,5.5rem);
+}
+.juntas-texto .h-l{margin-bottom:1.4rem;max-width:15em}
+.juntas-texto .bajada{font-size:1rem;line-height:1.8;max-width:46ch;margin-bottom:1.9rem}
+.juntas-texto .bajada strong{font-weight:700;color:var(--tinta)}
+@media(max-width:900px){
+  /* una columna: primero el texto, centrado, y la foto de banda debajo */
+  .juntas-pliego{grid-template-columns:1fr}
+  .juntas-foto{order:2}
+  .juntas-foto{min-height:0;aspect-ratio:5/4}
+  .juntas-foto img{object-position:40% 34%}
+  .juntas-texto{padding:clamp(3rem,9vw,4rem) 1.25rem clamp(2.5rem,8vw,3.5rem);
+    text-align:center}
+  .juntas-texto .cejilla{justify-content:center}
+  .juntas-texto .h-l,.juntas-texto .bajada{margin-inline:auto}
+  .juntas-texto .bajada{font-size:.95rem;line-height:1.75}
+}
+@media(max-width:560px){
+  .juntas-texto .cejilla{flex-direction:column;gap:.55rem}
+  .juntas-texto .h-l{text-wrap:balance}
+}
+
 /* ── 06 · Testimonios ──────────────────────────────────────────────────────
    Ocho recados pegados en un muro. Ocho notas de 250px no caben a lo ancho de
    ninguna pantalla —ni de lejos en los 1180px del sitio—, así que el carril se
@@ -1632,6 +1678,34 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   </div>
 </section>
 
+<!-- ══ 05 bis · INVITACIÓN: JUNTAS MENSUALES ══
+     Mitad foto, mitad texto. La psicóloga va en negrita porque es lo que más
+     pesa para decidir venir: no es una junta de amigas sola, hay una
+     especialista que orienta. El botón no inscribe a nadie: abre WhatsApp para
+     preguntar la fecha, porque la próxima junta cambia cada mes. -->
+<section class="juntas" id="invitacion">
+  <div class="juntas-pliego">
+    <figure class="juntas-foto rev">
+      <img src="img/grupo-de-mujeres-brindando2.webp"
+        alt="Siete mujeres sentadas alrededor de una mesa brindando con copas de vino entre risas, con fruta y pasteles en el centro"
+        width="1600" height="1067" loading="lazy" decoding="async">
+    </figure>
+    <div class="juntas-texto rev">
+      <p class="cejilla">Te invitamos</p>
+      <h2 class="h-l">Juntas mensuales organizadas por y para mamás</h2>
+      <p class="bajada">Nos reunimos un martes al mes para compartir experiencias,
+        intercambiar datos o simplemente pasar un buen rato, solo entre mamás. A
+        estas juntas asiste nuestra querida <strong>psicóloga Dennise
+        Sznaider</strong>, especialista en desarrollo infanto-juvenil, apego y
+        crianza positiva, quien nos apoya y orienta en el hermoso camino de la
+        crianza en neurodiversidad.</p>
+      <a class="btn btn-p" href="https://wa.me/56926122138?text=%C2%A1Hola%21%20Quisiera%20consultar%20por%20la%20fecha%20de%20la%20pr%C3%B3xima%20junta%20mensual%20de%20mam%C3%A1s%20%F0%9F%92%99.%20%C2%BFMe%20entregas%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
+        Consulta por nuestra próxima fecha</a>
+    </div>
+  </div>
+</section>
+
 <!-- ══ 06 · TESTIMONIOS ══
      La sección anterior cuenta el grupo; esta pregunta si la lectora ya está
      dentro sin saberlo. Las ocho notas NO son citas atribuidas —nadie firma—
@@ -1747,11 +1821,10 @@ main :focus-visible{outline-color:var(--nogal-osc)}
   <div class="cierre-halo" aria-hidden="true"></div>
   <div class="env">
     <div class="enc centro rev">
-      <p class="cejilla c-arcilla">Hablemos</p>
+      <p class="cejilla c-arcilla">Te esperamos</p>
       <h2 class="h-l">¿Te nos unes este siguiente martes?</h2>
-      <p class="bajada">Nos reunimos todos los martes de cada semana para compartir
-        experiencias, intercambiar datos o simplemente pasar un buen rato, solo
-        entre mamás.</p>
+      <p class="bajada">Nos reunimos solo entre mamás a beber una copa de vino,
+        compartir experiencias y aprender la una de la otra.</p>
       <a class="btn btn-p" href="https://wa.me/56926122138?text=%C2%A1Hola%21%20Quisiera%20participar%20en%20su%20siguiente%20actividad%20de%20mam%C3%A1s%20azules%20%F0%9F%92%99%2C%20%C2%BFMe%20entregas%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.3c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.8-1.3-1.3-2.8-1.3-4.4 0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.6 8.3-8 8.3z"/></svg>
         Quiero participar</a>
